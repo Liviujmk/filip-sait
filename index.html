@@ -47,11 +47,13 @@
             const zc = document.getElementById("zc")
             const ec = document.getElementById("ec")
             const ch = document.getElementById("ch")
+            const inv = document.getElementById("inv")
             btn.addEventListener("click", () => {
                 let val = input.value
                 zc.textContent = val * 0.2;
-                ec.textContent = val * 0.5;
-                ch.textContent = val * 0.3;
+                ec.textContent = val * 0.2;
+                ch.textContent = val * 0.2;
+                inv.textContent = val * 0.4;
 
             })
         </script>
