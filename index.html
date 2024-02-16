@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestionare financiară</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <body>
+        <div class="flex">
+            <h1 id="page-title">Gestionare financiară</h1>
+        </div>
+        <div class="flex int">
+            <label for="Suma">Introdu o suma</label>
+            <input type="number" id="inp">
+            <button id="btn">Calculează </button>
+        </div>
+        <div class="flex suma">
+            <div class="f">
+                <h3>zeciuiala:</h3>
+                <img src="https://i0.wp.com/www.cezareea.ro/wp-content/uploads/2014/05/Zeciuiala.jpg" alt="alternatetext" width="120" height="120">
+                <span class="suma" id="zc"></span>
+
+            </div>
+            <div class="f">
+                <h3> economiile:</h3>
+                <img src="economii.jpg" alt="alternatetext" width="120" height="120">
+                <span class="suma" id="ec"></span>
+
+            </div>
+            <div class="f">
+                <h3>cheltielile:</h3>
+                <img src="cheltuieli.jpg" alt="alternatetext" width="120" height="120">
+                <span class="suma" id="ch"></span>
+
+            </div>
+        </div>
+
+        <script>
+            const input = document.getElementById("inp")
+            const btn = document.getElementById("btn")
+            const zc = document.getElementById("zc")
+            const ec = document.getElementById("ec")
+            const ch = document.getElementById("ch")
+            btn.addEventListener("click", () => {
+                let val = input.value
+                zc.textContent = val * 0.2;
+                ec.textContent = val * 0.5;
+                ch.textContent = val * 0.3;
+
+            })
+        </script>
+        <button class="button button1">Green</button>
+
+
+    </body>
+
+</html>
