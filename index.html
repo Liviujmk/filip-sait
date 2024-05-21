@@ -4,32 +4,156 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestionare Financiară</title>
-    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background-color: #ADD8E6; /* Albastru deschis */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: #ADD8E6; /* Fundal albastru deschis pentru container */
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            width: 400px; /* Lățimea containerului */
+        }
+
+        .section {
+            margin: 20px 0; /* Spațiu mai mare între secțiuni */
+            padding: 20px;
+            background-color: white; /* Fundal alb pentru secțiuni */
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s ease-in-out, transform 0.3s ease; /* Adăugare tranziție pentru umbra și transform */
+            border: 2px solid #ADD8E6; /* Margine albastru mai deschis */
+            width: calc(100% - 40px); /* Lățimea secțiunii - 40px padding */
+        }
+
+        .section:hover {
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+            transform: scale(1.1); /* Mărește ușor secțiunea la atingerea cursorului */
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+        }
+
+        input[type="text"], input[type="submit"] {
+            width: calc(100% - 22px); /* Lățimea input-ului - 22px pentru padding */
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #00008B; /* Albastru mai închis */
+            border-radius: 5px;
+            box-sizing: border-box;
+            transition: transform 0.3s ease; /* Adăugare tranziție pentru transform */
+        }
+
+        input[type="text"]:focus, input[type="submit"]:focus {
+            transform: scale(1.1); /* Mărește ușor butoanele la atingere */
+        }
+
+        input[type="submit"] {
+            background-color: #4682B4; /* Albastru mai închis pentru buton */
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease, color 0.3s ease; /* Adăugare tranziție pentru culori */
+        }
+
+        input[type="submit"]:hover {
+            background-color: white; /* Fundalul devine alb la atingere */
+            color: #4682B4; /* Textul devine albastru la atingere */
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            background-color: #e6f0ff; /* Fundal mai deschis pentru elementele listei */
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #00008B; /* Albastru mai închis */
+            border-radius: 5px;
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 2s ease-in-out;
+        }
+
+        .animate-slide-in {
+            animation: slideIn 1s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-100%);
+            }
+            to {
+                transform: translateY(0);
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <div class="section">
-            <h2>Gestionare Financiară</h2>
-            <h3>Valoarea Totală:</h3>
-            <input type="text" id="totalValue" placeholder="Valoare Totală">
-            <ul id="divisionValueList"></ul>
+            <h2 class="animate-fade-in">Gestionare Financiară</h2>
+            <h3 class="animate-fade-in">Valoarea Totală:</h3>
+            <input type="text" id="totalValue" placeholder="Valoare Totală" class="animate-slide-in">
+            <ul id="divisionValueList" class="animate-fade-in"></ul>
         </div>
         <div class="section">
-            <h2>Adăugați categorie</h2>
+            <h2 class="animate-fade-in">Adăugați categorie</h2>
             <div class="form-group">
-                <label for="divisionName">Nume:</label>
-                <input type="text" id="divisionName" placeholder="Nume Diviziune">
+                <label for="divisionName" class="animate-fade-in">Nume:</label>
+                <input type="text" id="divisionName" placeholder="Nume Diviziune" class="animate-slide-in">
             </div>
             <div class="form-group">
-                <label for="percentage">Procentaj:</label>
-                <input type="text" id="percentage" placeholder="Procentaj">
+                <label for="percentage" class="animate-fade-in">Procentaj:</label>
+                <input type="text" id="percentage" placeholder="Procentaj" class="animate-slide-in">
             </div>
-            <input type="submit" value="Adaugă Diviziune" id="addDivision">
+            <input type="submit" value="Adaugă Diviziune" id="addDivision" class="animate-fade-in">
         </div>
     </div>
 
     <script>
-        document.getElementById('addDivision').addEventListener('click', function() {
+        var addButton = document.getElementById('addDivision');
+        var sections = document.querySelectorAll('.section');
+
+        addButton.addEventListener('mouseover', function() {
+            this.style.backgroundColor = '#5a9bd3'; /* Schimbă culoarea fundalului butonului la atingere */
+            this.style.color = '#4682B4'; /* Schimbă culoarea textului butonului la atingere */
+        });
+
+        addButton.addEventListener('mouseout', function() {
+            this.style.backgroundColor = '#4682B4'; /* Revenire la culoarea originală a fundalului butonului */
+            this.style.color = 'white'; /* Revenire la culoarea originală a textului butonului */
+        });
+
+        sections.forEach(function(section) {
+            section.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.02)'; /* Mărește ușor secțiunea la atingerea cursorului */
+            });
+
+            section.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1)'; /* Revenire la dimensiunea originală */
+            });
+        });
+		 document.getElementById('addDivision').addEventListener('click', function() {
             var totalValueElement = document.getElementById('totalValue');
             var totalValue = parseFloat(totalValueElement.value);
             var divisionName = document.getElementById('divisionName').value;
