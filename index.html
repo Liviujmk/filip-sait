@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Gestionare Financiară</title>
     <style>
         body {
             background-color: #ADD8E6;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             height: 100vh;
             margin: 0;
+            padding-top: 20px;
         }
 
         .container {
@@ -30,14 +31,14 @@
             background-color: white;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            transition: box-shadow 0.3s ease-in-out, transform 0.3s ease;
             border: 2px solid #ADD8E6;
+            transition: box-shadow 0.3s ease, transform 0.3s ease;
             width: calc(100% - 40px);
         }
 
         .section:hover {
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-            transform: scale(1.1);
+            transform: scale(1.02);
         }
 
         .form-group {
@@ -82,141 +83,94 @@
             border: 1px solid #00008B;
             border-radius: 5px;
         }
-
-        .animate-fade-in {
-            animation: fadeIn 2s ease-in-out;
-        }
-
-        .animate-slide-in {
-            animation: slideIn 1s ease-in-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes slideIn {
-            from { transform: translateY(-100%); }
-            to { transform: translateY(0); }
-        }
     </style>
 </head>
 <body>
     <div class="container">
+
+        <!-- Diviziuni Salvate -->
         <div class="section">
-            <h2 class="animate-fade-in">Gestionare Financiară</h2>
-            <h3 class="animate-fade-in">Valoarea Totală:</h3>
-            <input type="text" id="totalValue" placeholder="Valoare Totală" class="animate-slide-in">
-            <ul id="divisionValueList" class="animate-fade-in"></ul>
+            <h2>Diviziuni Salvate</h2>
+            <ul id="savedDivisionsList"></ul>
+            <input type="submit" value="Salvează Diviziunile Ca Șablon" id="saveTemplate">
         </div>
 
+        <!-- Total și calcul -->
         <div class="section">
-            <h2 class="animate-fade-in">Adăugați categorie</h2>
-            <div class="form-group">
-                <label for="divisionName" class="animate-fade-in">Nume:</label>
-                <input type="text" id="divisionName" placeholder="Nume categorie" class="animate-slide-in">
-            </div>
-            <div class="form-group">
-                <label for="percentage" class="animate-fade-in">Procentaj:</label>
-                <input type="text" id="percentage" placeholder="Procentaj" class="animate-slide-in">
-            </div>
-            <input type="submit" value="Adaugă Diviziune" id="addDivision" class="animate-fade-in">
+            <h2>Gestionare Financiară</h2>
+            <h3>Valoarea Totală:</h3>
+            <input type="text" id="totalValue" placeholder="Valoare Totală">
+            <ul id="divisionValueList"></ul>
         </div>
 
+        <!-- Adăugare categorie -->
         <div class="section">
-            <h2 class="animate-fade-in">Diviziuni Salvate</h2>
-            <ul id="savedDivisionsList" class="animate-fade-in"></ul>
-            <input type="submit" value="Salvează Diviziunile Ca Șablon" id="saveTemplate" class="animate-fade-in">
+            <h2>Adăugați categorie</h2>
+            <div class="form-group">
+                <label for="divisionName">Nume:</label>
+                <input type="text" id="divisionName" placeholder="Nume categorie">
+            </div>
+            <div class="form-group">
+                <label for="percentage">Procentaj:</label>
+                <input type="text" id="percentage" placeholder="Procentaj">
+            </div>
+            <input type="submit" value="Adaugă Diviziune" id="addDivision">
         </div>
+
     </div>
 
     <script>
         const addButton = document.getElementById('addDivision');
         const saveButton = document.getElementById('saveTemplate');
+        const totalInput = document.getElementById('totalValue');
         const divisionList = document.getElementById('divisionValueList');
         const savedTemplateList = document.getElementById('savedDivisionsList');
 
-        addButton.addEventListener('mouseover', function () {
-            this.style.backgroundColor = '#5a9bd3';
-            this.style.color = 'white';
-        });
-
-        addButton.addEventListener('mouseout', function () {
-            this.style.backgroundColor = '#4682B4';
-            this.style.color = 'white';
-        });
-
-        document.querySelectorAll('.section').forEach(section => {
-            section.addEventListener('mouseenter', function () {
-                this.style.transform = 'scale(1.02)';
-            });
-
-            section.addEventListener('mouseleave', function () {
-                this.style.transform = 'scale(1)';
-            });
-        });
-
+        // Adăugare diviziune nouă
         addButton.addEventListener('click', addDivision);
         document.getElementById('percentage').addEventListener('keypress', function (event) {
-            if (event.key === 'Enter') {
-                addDivision();
-            }
+            if (event.key === 'Enter') addDivision();
         });
 
+        totalInput.addEventListener('input', updateDivisionValues);
+
         function addDivision() {
-            const totalValue = parseFloat(document.getElementById('totalValue').value);
             const name = document.getElementById('divisionName').value.trim();
             const percent = parseFloat(document.getElementById('percentage').value);
+            if (!name || isNaN(percent)) return;
 
-            if (!name || isNaN(percent) || isNaN(totalValue)) return;
+            const saved = JSON.parse(localStorage.getItem('divisionTemplate')) || [];
+            saved.push({ name, percentage: percent });
+            localStorage.setItem('divisionTemplate', JSON.stringify(saved));
 
-            const value = Math.floor((totalValue * percent) / 100);
-            const li = document.createElement('li');
-            li.textContent = `${name}: ${value} (${percent}%)`;
-            divisionList.appendChild(li);
-
-            saveToLocalStorage(name, percent);
             document.getElementById('divisionName').value = '';
             document.getElementById('percentage').value = '';
+            updateDivisionValues();
+            displaySavedTemplate();
         }
 
-        function saveToLocalStorage(name, percent) {
-            const saved = JSON.parse(localStorage.getItem('divisions')) || [];
-            saved.push({ name, percent });
-            localStorage.setItem('divisions', JSON.stringify(saved));
-        }
-
-        function loadFromLocalStorage() {
-            const saved = JSON.parse(localStorage.getItem('divisions')) || [];
-            const totalValue = parseFloat(document.getElementById('totalValue').value) || 0;
+        function updateDivisionValues() {
+            const total = parseFloat(totalInput.value);
+            const saved = JSON.parse(localStorage.getItem('divisionTemplate')) || [];
             divisionList.innerHTML = '';
+            if (isNaN(total)) return;
+
             saved.forEach(item => {
-                const value = Math.floor((totalValue * item.percent) / 100);
+                const amount = Math.floor((total * item.percentage) / 100);
                 const li = document.createElement('li');
-                li.textContent = `${item.name}: ${value} (${item.percent}%)`;
+                li.textContent = `${item.name}: ${amount} (${item.percentage}%)`;
                 divisionList.appendChild(li);
             });
         }
 
         function saveDivisionTemplate() {
-            const items = [];
-            document.querySelectorAll('#divisionValueList li').forEach(li => {
-                const match = li.textContent.match(/^(.*): [\d]+ \(([\d.]+)%\)$/);
-                if (match) {
-                    items.push({
-                        name: match[1],
-                        percentage: parseFloat(match[2])
-                    });
-                }
-            });
-            localStorage.setItem('divisionTemplate', JSON.stringify(items));
-            displaySavedTemplate();
+            // Already stored in localStorage via addDivision
+            alert("Șablonul a fost salvat în memoria locală.");
         }
 
         function displaySavedTemplate() {
-            savedTemplateList.innerHTML = '';
             const saved = JSON.parse(localStorage.getItem('divisionTemplate')) || [];
+            savedTemplateList.innerHTML = '';
             saved.forEach(item => {
                 const li = document.createElement('li');
                 li.textContent = `${item.name}: ${item.percentage}%`;
@@ -227,8 +181,8 @@
         saveButton.addEventListener('click', saveDivisionTemplate);
 
         window.onload = function () {
-            loadFromLocalStorage();
             displaySavedTemplate();
+            updateDivisionValues();
         };
     </script>
 </body>
