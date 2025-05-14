@@ -1,18 +1,17 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestionare Financiară</title>
     <style>
         body {
             background-color: #ADD8E6;
             display: flex;
             justify-content: center;
-            align-items: flex-start;
+            align-items: center;
             height: 100vh;
             margin: 0;
-            padding-top: 20px;
         }
 
         .container {
@@ -20,9 +19,8 @@
             padding: 20px;
             border-radius: 10px;
             text-align: center;
-            width: 500px;
-            overflow-y: auto;
-            max-height: 100vh;
+            width: 90%;
+            max-width: 400px;
         }
 
         .section {
@@ -31,21 +29,21 @@
             background-color: white;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s ease-in-out, transform 0.3s ease;
             border: 2px solid #ADD8E6;
-            transition: box-shadow 0.3s ease, transform 0.3s ease;
             width: calc(100% - 40px);
         }
 
         .section:hover {
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-            transform: scale(1.02);
+            transform: scale(1.1);
         }
 
         .form-group {
             margin-bottom: 10px;
         }
 
-        input[type="text"], input[type="submit"], button {
+        input[type="text"], input[type="submit"] {
             width: calc(100% - 22px);
             padding: 10px;
             margin: 5px 0;
@@ -55,18 +53,18 @@
             transition: transform 0.3s ease;
         }
 
-        input[type="text"]:focus, input[type="submit"]:focus, button:focus {
+        input[type="text"]:focus, input[type="submit"]:focus {
             transform: scale(1.1);
         }
 
-        input[type="submit"], button {
+        input[type="submit"] {
             background-color: #4682B4;
             color: white;
             cursor: pointer;
             transition: background-color 0.3s ease, color 0.3s ease;
         }
 
-        input[type="submit"]:hover, button:hover {
+        input[type="submit"]:hover {
             background-color: white;
             color: #4682B4;
         }
@@ -83,127 +81,125 @@
             border: 1px solid #00008B;
             border-radius: 5px;
         }
+
+        .animate-fade-in {
+            animation: fadeIn 2s ease-in-out;
+        }
+
+        .animate-slide-in {
+            animation: slideIn 1s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-100%); }
+            to { transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-
-        <!-- Diviziuni Salvate -->
-        <div class="section">
-            <h2>Diviziuni Salvate</h2>
-            <ul id="savedDivisionsList"></ul>
-            <input type="submit" value="Salvează Diviziunile Ca Șablon" id="saveTemplate">
-            <button id="clearTemplate">Șterge Șablonul</button>
-            <button id="exportTemplate">Exportă ca JSON</button>
-        </div>
-
-        <!-- Total și calcul -->
-        <div class="section">
-            <h2>Gestionare Financiară</h2>
-            <h3>Valoarea Totală:</h3>
-            <input type="text" id="totalValue" placeholder="Valoare Totală">
-            <ul id="divisionValueList"></ul>
-        </div>
-
-        <!-- Adăugare categorie -->
-        <div class="section">
-            <h2>Adăugați categorie</h2>
-            <div class="form-group">
-                <label for="divisionName">Nume:</label>
-                <input type="text" id="divisionName" placeholder="Nume categorie">
-            </div>
-            <div class="form-group">
-                <label for="percentage">Procentaj:</label>
-                <input type="text" id="percentage" placeholder="Procentaj">
-            </div>
-            <input type="submit" value="Adaugă Diviziune" id="addDivision">
-        </div>
-
+<div class="container">
+    <div class="section">
+        <h2 class="animate-fade-in">Gestionare Financiară</h2>
+        <h3 class="animate-fade-in">Valoarea Totală:</h3>
+        <input type="text" id="totalValue" placeholder="Valoare Totală" class="animate-slide-in">
+        <ul id="divisionValueList" class="animate-fade-in"></ul>
     </div>
+    <div class="section">
+        <h2 class="animate-fade-in">Adăugați categorie</h2>
+        <div class="form-group">
+            <label for="divisionName" class="animate-fade-in">Nume:</label>
+            <input type="text" id="divisionName" placeholder="Nume categorie" class="animate-slide-in">
+        </div>
+        <div class="form-group">
+            <label for="percentage" class="animate-fade-in">Procentaj:</label>
+            <input type="text" id="percentage" placeholder="Procentaj" class="animate-slide-in">
+        </div>
+        <input type="submit" value="Adaugă Diviziune" id="addDivision" class="animate-fade-in">
+        <input type="submit" value="Resetare" id="resetList" class="animate-fade-in">
+    </div>
+</div>
 
-    <script>
-        const addButton = document.getElementById('addDivision');
-        const saveButton = document.getElementById('saveTemplate');
-        const clearButton = document.getElementById('clearTemplate');
-        const exportButton = document.getElementById('exportTemplate');
-        const totalInput = document.getElementById('totalValue');
-        const divisionList = document.getElementById('divisionValueList');
-        const savedTemplateList = document.getElementById('savedDivisionsList');
+<script>
+    let currentTotalPercentage = 0;
 
-        addButton.addEventListener('click', addDivision);
-        document.getElementById('percentage').addEventListener('keypress', function (event) {
-            if (event.key === 'Enter') addDivision();
+    function loadFromLocalStorage() {
+        const savedData = JSON.parse(localStorage.getItem('divisionList')) || [];
+        currentTotalPercentage = 0;
+        savedData.forEach(item => {
+            addItemToList(item.name, item.amount, item.percentage);
+            currentTotalPercentage += item.percentage;
         });
+    }
 
-        totalInput.addEventListener('input', updateDivisionValues);
+    function saveToLocalStorage() {
+        const items = [];
+        document.querySelectorAll('#divisionValueList li').forEach(li => {
+            const parts = li.textContent.match(/(.*): ([\d.]+) \(([\d.]+)%\)/);
+            if (parts) {
+                items.push({
+                    name: parts[1],
+                    amount: parseFloat(parts[2]),
+                    percentage: parseFloat(parts[3])
+                });
+            }
+        });
+        localStorage.setItem('divisionList', JSON.stringify(items));
+    }
 
-        function addDivision() {
-            const name = document.getElementById('divisionName').value.trim();
-            const percent = parseFloat(document.getElementById('percentage').value);
-            if (!name || isNaN(percent)) return;
+    function addItemToList(name, amount, percentage) {
+        const divisionValueList = document.getElementById('divisionValueList');
+        const listItem = document.createElement('li');
+        listItem.textContent = `${name}: ${amount.toFixed(2)} (${percentage}%)`;
+        divisionValueList.appendChild(listItem);
+    }
 
-            const saved = JSON.parse(localStorage.getItem('divisionTemplate')) || [];
-            saved.push({ name, percentage: percent });
-            localStorage.setItem('divisionTemplate', JSON.stringify(saved));
+    function resetInputs() {
+        document.getElementById('divisionName').value = '';
+        document.getElementById('percentage').value = '';
+    }
 
-            document.getElementById('divisionName').value = '';
-            document.getElementById('percentage').value = '';
-            updateDivisionValues();
-            displaySavedTemplate();
+    document.getElementById('addDivision').addEventListener('click', function () {
+        const totalValue = parseFloat(document.getElementById('totalValue').value);
+        const divisionName = document.getElementById('divisionName').value.trim();
+        const percentage = parseFloat(document.getElementById('percentage').value);
+
+        if (!divisionName || isNaN(totalValue) || isNaN(percentage) || percentage <= 0 || percentage > 100) {
+            alert("Introduceți un nume valid, o valoare numerică și un procent între 0 și 100.");
+            return;
         }
 
-        function updateDivisionValues() {
-            const total = parseFloat(totalInput.value);
-            const saved = JSON.parse(localStorage.getItem('divisionTemplate')) || [];
-            divisionList.innerHTML = '';
-            if (isNaN(total)) return;
-
-            saved.forEach(item => {
-                const amount = Math.floor((total * item.percentage) / 100);
-                const li = document.createElement('li');
-                li.textContent = `${item.name}: ${amount} (${item.percentage}%)`;
-                divisionList.appendChild(li);
-            });
+        if (currentTotalPercentage + percentage > 100) {
+            alert("Totalul procentajelor nu poate depăși 100%");
+            return;
         }
 
-        function saveDivisionTemplate() {
-            alert("Șablonul este deja salvat automat.");
+        const divisionAmount = (totalValue * percentage) / 100;
+        addItemToList(divisionName, divisionAmount, percentage);
+        currentTotalPercentage += percentage;
+        saveToLocalStorage();
+        resetInputs();
+    });
+
+    document.getElementById('percentage').addEventListener('keypress', function (event) {
+        if (event.key === 'Enter') {
+            document.getElementById('addDivision').click();
         }
+    });
 
-        function clearDivisionTemplate() {
-            localStorage.removeItem('divisionTemplate');
-            savedTemplateList.innerHTML = '';
-            divisionList.innerHTML = '';
-            alert("Șablonul a fost șters.");
-        }
+    document.getElementById('resetList').addEventListener('click', function () {
+        document.getElementById('divisionValueList').innerHTML = '';
+        document.getElementById('totalValue').value = '';
+        currentTotalPercentage = 0;
+        localStorage.removeItem('divisionList');
+    });
 
-        function exportDivisionTemplate() {
-            const saved = JSON.parse(localStorage.getItem('divisionTemplate')) || [];
-            const blob = new Blob([JSON.stringify(saved, null, 2)], { type: "application/json" });
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = "diviziuni.json";
-            link.click();
-        }
-
-        function displaySavedTemplate() {
-            const saved = JSON.parse(localStorage.getItem('divisionTemplate')) || [];
-            savedTemplateList.innerHTML = '';
-            saved.forEach(item => {
-                const li = document.createElement('li');
-                li.textContent = `${item.name}: ${item.percentage}%`;
-                savedTemplateList.appendChild(li);
-            });
-        }
-
-        saveButton.addEventListener('click', saveDivisionTemplate);
-        clearButton.addEventListener('click', clearDivisionTemplate);
-        exportButton.addEventListener('click', exportDivisionTemplate);
-
-        window.onload = function () {
-            displaySavedTemplate();
-            updateDivisionValues();
-        };
-    </script>
+    // Load saved data on page load
+    window.onload = loadFromLocalStorage;
+</script>
 </body>
 </html>
