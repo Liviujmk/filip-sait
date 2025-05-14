@@ -1,139 +1,35 @@
-<!DOCTYPE html>
-<html lang="ro">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestionare Financiară</title>
-    <style>
-        body {
-            background-color: #ADD8E6;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-
-        .container {
-            background-color: #ADD8E6;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            width: 90%;
-            max-width: 400px;
-        }
-
-        .section {
-            margin: 20px 0;
-            padding: 20px;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            transition: box-shadow 0.3s ease-in-out, transform 0.3s ease;
-            border: 2px solid #ADD8E6;
-            width: calc(100% - 40px);
-        }
-
-        .section:hover {
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-            transform: scale(1.1);
-        }
-
-        .form-group {
-            margin-bottom: 10px;
-        }
-
-        input[type="text"], input[type="submit"] {
-            width: calc(100% - 22px);
-            padding: 10px;
-            margin: 5px 0;
-            border: 1px solid #00008B;
-            border-radius: 5px;
-            box-sizing: border-box;
-            transition: transform 0.3s ease;
-        }
-
-        input[type="text"]:focus, input[type="submit"]:focus {
-            transform: scale(1.1);
-        }
-
-        input[type="submit"] {
-            background-color: #4682B4;
-            color: white;
-            cursor: pointer;
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-
-        input[type="submit"]:hover {
-            background-color: white;
-            color: #4682B4;
-        }
-
-        ul {
-            list-style-type: none;
-            padding: 0;
-        }
-
-        li {
-            background-color: #e6f0ff;
-            padding: 10px;
-            margin: 5px 0;
-            border: 1px solid #00008B;
-            border-radius: 5px;
-        }
-
-        .animate-fade-in {
-            animation: fadeIn 2s ease-in-out;
-        }
-
-        .animate-slide-in {
-            animation: slideIn 1s ease-in-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes slideIn {
-            from { transform: translateY(-100%); }
-            to { transform: translateY(0); }
-        }
-    </style>
-</head>
-<body>
-<div class="container">
-    <div class="section">
-        <h2 class="animate-fade-in">Gestionare Financiară</h2>
-        <h3 class="animate-fade-in">Valoarea Totală:</h3>
-        <input type="text" id="totalValue" placeholder="Valoare Totală" class="animate-slide-in">
-        <ul id="divisionValueList" class="animate-fade-in"></ul>
-    </div>
-    <div class="section">
-        <h2 class="animate-fade-in">Adăugați categorie</h2>
-        <div class="form-group">
-            <label for="divisionName" class="animate-fade-in">Nume:</label>
-            <input type="text" id="divisionName" placeholder="Nume categorie" class="animate-slide-in">
-        </div>
-        <div class="form-group">
-            <label for="percentage" class="animate-fade-in">Procentaj:</label>
-            <input type="text" id="percentage" placeholder="Procentaj" class="animate-slide-in">
-        </div>
-        <input type="submit" value="Adaugă Diviziune" id="addDivision" class="animate-fade-in">
-        <input type="submit" value="Resetare" id="resetList" class="animate-fade-in">
-    </div>
-</div>
-
 <script>
     let currentTotalPercentage = 0;
+
+    function updateUsedPercentageDisplay() {
+        document.getElementById('percentageUsed').textContent = `Procent total folosit: ${currentTotalPercentage.toFixed(2)}%`;
+    }
+
+    function createEmptyMessage() {
+        const divisionValueList = document.getElementById('divisionValueList');
+        if (divisionValueList.children.length === 0) {
+            const emptyMessage = document.createElement('li');
+            emptyMessage.textContent = "Nicio categorie adăugată.";
+            emptyMessage.id = "emptyMessage";
+            divisionValueList.appendChild(emptyMessage);
+        }
+    }
+
+    function removeEmptyMessage() {
+        const message = document.getElementById('emptyMessage');
+        if (message) message.remove();
+    }
 
     function loadFromLocalStorage() {
         const savedData = JSON.parse(localStorage.getItem('divisionList')) || [];
         currentTotalPercentage = 0;
+        document.getElementById('divisionValueList').innerHTML = '';
         savedData.forEach(item => {
             addItemToList(item.name, item.amount, item.percentage);
             currentTotalPercentage += item.percentage;
         });
+        updateUsedPercentageDisplay();
+        createEmptyMessage();
     }
 
     function saveToLocalStorage() {
@@ -152,9 +48,29 @@
     }
 
     function addItemToList(name, amount, percentage) {
+        removeEmptyMessage();
         const divisionValueList = document.getElementById('divisionValueList');
         const listItem = document.createElement('li');
         listItem.textContent = `${name}: ${amount.toFixed(2)} (${percentage}%)`;
+
+        // Buton de ștergere
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = "✕";
+        deleteBtn.style.float = "right";
+        deleteBtn.style.border = "none";
+        deleteBtn.style.background = "transparent";
+        deleteBtn.style.color = "red";
+        deleteBtn.style.cursor = "pointer";
+
+        deleteBtn.onclick = function () {
+            listItem.remove();
+            currentTotalPercentage -= percentage;
+            updateUsedPercentageDisplay();
+            saveToLocalStorage();
+            createEmptyMessage();
+        };
+
+        listItem.appendChild(deleteBtn);
         divisionValueList.appendChild(listItem);
     }
 
@@ -168,8 +84,8 @@
         const divisionName = document.getElementById('divisionName').value.trim();
         const percentage = parseFloat(document.getElementById('percentage').value);
 
-        if (!divisionName || isNaN(totalValue) || isNaN(percentage) || percentage <= 0 || percentage > 100) {
-            alert("Introduceți un nume valid, o valoare numerică și un procent între 0 și 100.");
+        if (!divisionName || isNaN(totalValue) || totalValue <= 0 || isNaN(percentage) || percentage <= 0 || percentage > 100) {
+            alert("Introduceți un nume valid, o valoare totală numerică pozitivă și un procent între 0 și 100.");
             return;
         }
 
@@ -181,6 +97,7 @@
         const divisionAmount = (totalValue * percentage) / 100;
         addItemToList(divisionName, divisionAmount, percentage);
         currentTotalPercentage += percentage;
+        updateUsedPercentageDisplay();
         saveToLocalStorage();
         resetInputs();
     });
@@ -191,15 +108,35 @@
         }
     });
 
+    // Recalculare când se apasă Enter în câmpul totalValue
+    document.getElementById('totalValue').addEventListener('keypress', function (event) {
+        if (event.key === 'Enter') {
+            const totalValue = parseFloat(document.getElementById('totalValue').value);
+            if (isNaN(totalValue) || totalValue <= 0) {
+                alert("Introduceți o valoare totală numerică pozitivă.");
+                return;
+            }
+
+            const savedData = JSON.parse(localStorage.getItem('divisionList')) || [];
+            document.getElementById('divisionValueList').innerHTML = '';
+            savedData.forEach(item => {
+                const newAmount = (totalValue * item.percentage) / 100;
+                addItemToList(item.name, newAmount, item.percentage);
+            });
+            updateUsedPercentageDisplay();
+            createEmptyMessage();
+        }
+    });
+
     document.getElementById('resetList').addEventListener('click', function () {
         document.getElementById('divisionValueList').innerHTML = '';
         document.getElementById('totalValue').value = '';
         currentTotalPercentage = 0;
         localStorage.removeItem('divisionList');
+        updateUsedPercentageDisplay();
+        createEmptyMessage();
     });
 
-    // Load saved data on page load
+    // La încărcarea paginii
     window.onload = loadFromLocalStorage;
 </script>
-</body>
-</html>
