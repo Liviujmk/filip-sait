@@ -19,8 +19,9 @@
             padding: 20px;
             border-radius: 10px;
             text-align: center;
-            width: 90%;
-            max-width: 400px;
+            width: 500px;
+            overflow-y: auto;
+            max-height: 100vh;
         }
 
         .section {
@@ -102,104 +103,133 @@
     </style>
 </head>
 <body>
-<div class="container">
-    <div class="section">
-        <h2 class="animate-fade-in">Gestionare Financiară</h2>
-        <h3 class="animate-fade-in">Valoarea Totală:</h3>
-        <input type="text" id="totalValue" placeholder="Valoare Totală" class="animate-slide-in">
-        <ul id="divisionValueList" class="animate-fade-in"></ul>
-    </div>
-    <div class="section">
-        <h2 class="animate-fade-in">Adăugați categorie</h2>
-        <div class="form-group">
-            <label for="divisionName" class="animate-fade-in">Nume:</label>
-            <input type="text" id="divisionName" placeholder="Nume categorie" class="animate-slide-in">
+    <div class="container">
+        <div class="section">
+            <h2 class="animate-fade-in">Gestionare Financiară</h2>
+            <h3 class="animate-fade-in">Valoarea Totală:</h3>
+            <input type="text" id="totalValue" placeholder="Valoare Totală" class="animate-slide-in">
+            <ul id="divisionValueList" class="animate-fade-in"></ul>
         </div>
-        <div class="form-group">
-            <label for="percentage" class="animate-fade-in">Procentaj:</label>
-            <input type="text" id="percentage" placeholder="Procentaj" class="animate-slide-in">
+
+        <div class="section">
+            <h2 class="animate-fade-in">Adăugați categorie</h2>
+            <div class="form-group">
+                <label for="divisionName" class="animate-fade-in">Nume:</label>
+                <input type="text" id="divisionName" placeholder="Nume categorie" class="animate-slide-in">
+            </div>
+            <div class="form-group">
+                <label for="percentage" class="animate-fade-in">Procentaj:</label>
+                <input type="text" id="percentage" placeholder="Procentaj" class="animate-slide-in">
+            </div>
+            <input type="submit" value="Adaugă Diviziune" id="addDivision" class="animate-fade-in">
         </div>
-        <input type="submit" value="Adaugă Diviziune" id="addDivision" class="animate-fade-in">
-        <input type="submit" value="Resetare" id="resetList" class="animate-fade-in">
+
+        <div class="section">
+            <h2 class="animate-fade-in">Diviziuni Salvate</h2>
+            <ul id="savedDivisionsList" class="animate-fade-in"></ul>
+            <input type="submit" value="Salvează Diviziunile Ca Șablon" id="saveTemplate" class="animate-fade-in">
+        </div>
     </div>
-</div>
 
-<script>
-    let currentTotalPercentage = 0;
+    <script>
+        const addButton = document.getElementById('addDivision');
+        const saveButton = document.getElementById('saveTemplate');
+        const divisionList = document.getElementById('divisionValueList');
+        const savedTemplateList = document.getElementById('savedDivisionsList');
 
-    function loadFromLocalStorage() {
-        const savedData = JSON.parse(localStorage.getItem('divisionList')) || [];
-        currentTotalPercentage = 0;
-        savedData.forEach(item => {
-            addItemToList(item.name, item.amount, item.percentage);
-            currentTotalPercentage += item.percentage;
+        addButton.addEventListener('mouseover', function () {
+            this.style.backgroundColor = '#5a9bd3';
+            this.style.color = 'white';
         });
-    }
 
-    function saveToLocalStorage() {
-        const items = [];
-        document.querySelectorAll('#divisionValueList li').forEach(li => {
-            const parts = li.textContent.match(/(.*): ([\d.]+) \(([\d.]+)%\)/);
-            if (parts) {
-                items.push({
-                    name: parts[1],
-                    amount: parseFloat(parts[2]),
-                    percentage: parseFloat(parts[3])
-                });
+        addButton.addEventListener('mouseout', function () {
+            this.style.backgroundColor = '#4682B4';
+            this.style.color = 'white';
+        });
+
+        document.querySelectorAll('.section').forEach(section => {
+            section.addEventListener('mouseenter', function () {
+                this.style.transform = 'scale(1.02)';
+            });
+
+            section.addEventListener('mouseleave', function () {
+                this.style.transform = 'scale(1)';
+            });
+        });
+
+        addButton.addEventListener('click', addDivision);
+        document.getElementById('percentage').addEventListener('keypress', function (event) {
+            if (event.key === 'Enter') {
+                addDivision();
             }
         });
-        localStorage.setItem('divisionList', JSON.stringify(items));
-    }
 
-    function addItemToList(name, amount, percentage) {
-        const divisionValueList = document.getElementById('divisionValueList');
-        const listItem = document.createElement('li');
-        listItem.textContent = `${name}: ${amount.toFixed(2)} (${percentage}%)`;
-        divisionValueList.appendChild(listItem);
-    }
+        function addDivision() {
+            const totalValue = parseFloat(document.getElementById('totalValue').value);
+            const name = document.getElementById('divisionName').value.trim();
+            const percent = parseFloat(document.getElementById('percentage').value);
 
-    function resetInputs() {
-        document.getElementById('divisionName').value = '';
-        document.getElementById('percentage').value = '';
-    }
+            if (!name || isNaN(percent) || isNaN(totalValue)) return;
 
-    document.getElementById('addDivision').addEventListener('click', function () {
-        const totalValue = parseFloat(document.getElementById('totalValue').value);
-        const divisionName = document.getElementById('divisionName').value.trim();
-        const percentage = parseFloat(document.getElementById('percentage').value);
+            const value = Math.floor((totalValue * percent) / 100);
+            const li = document.createElement('li');
+            li.textContent = `${name}: ${value} (${percent}%)`;
+            divisionList.appendChild(li);
 
-        if (!divisionName || isNaN(totalValue) || isNaN(percentage) || percentage <= 0 || percentage > 100) {
-            alert("Introduceți un nume valid, o valoare numerică și un procent între 0 și 100.");
-            return;
+            saveToLocalStorage(name, percent);
+            document.getElementById('divisionName').value = '';
+            document.getElementById('percentage').value = '';
         }
 
-        if (currentTotalPercentage + percentage > 100) {
-            alert("Totalul procentajelor nu poate depăși 100%");
-            return;
+        function saveToLocalStorage(name, percent) {
+            const saved = JSON.parse(localStorage.getItem('divisions')) || [];
+            saved.push({ name, percent });
+            localStorage.setItem('divisions', JSON.stringify(saved));
         }
 
-        const divisionAmount = (totalValue * percentage) / 100;
-        addItemToList(divisionName, divisionAmount, percentage);
-        currentTotalPercentage += percentage;
-        saveToLocalStorage();
-        resetInputs();
-    });
-
-    document.getElementById('percentage').addEventListener('keypress', function (event) {
-        if (event.key === 'Enter') {
-            document.getElementById('addDivision').click();
+        function loadFromLocalStorage() {
+            const saved = JSON.parse(localStorage.getItem('divisions')) || [];
+            const totalValue = parseFloat(document.getElementById('totalValue').value) || 0;
+            divisionList.innerHTML = '';
+            saved.forEach(item => {
+                const value = Math.floor((totalValue * item.percent) / 100);
+                const li = document.createElement('li');
+                li.textContent = `${item.name}: ${value} (${item.percent}%)`;
+                divisionList.appendChild(li);
+            });
         }
-    });
 
-    document.getElementById('resetList').addEventListener('click', function () {
-        document.getElementById('divisionValueList').innerHTML = '';
-        document.getElementById('totalValue').value = '';
-        currentTotalPercentage = 0;
-        localStorage.removeItem('divisionList');
-    });
+        function saveDivisionTemplate() {
+            const items = [];
+            document.querySelectorAll('#divisionValueList li').forEach(li => {
+                const match = li.textContent.match(/^(.*): [\d]+ \(([\d.]+)%\)$/);
+                if (match) {
+                    items.push({
+                        name: match[1],
+                        percentage: parseFloat(match[2])
+                    });
+                }
+            });
+            localStorage.setItem('divisionTemplate', JSON.stringify(items));
+            displaySavedTemplate();
+        }
 
-    // Load saved data on page load
-    window.onload = loadFromLocalStorage;
-</script>
+        function displaySavedTemplate() {
+            savedTemplateList.innerHTML = '';
+            const saved = JSON.parse(localStorage.getItem('divisionTemplate')) || [];
+            saved.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = `${item.name}: ${item.percentage}%`;
+                savedTemplateList.appendChild(li);
+            });
+        }
+
+        saveButton.addEventListener('click', saveDivisionTemplate);
+
+        window.onload = function () {
+            loadFromLocalStorage();
+            displaySavedTemplate();
+        };
+    </script>
 </body>
 </html>
