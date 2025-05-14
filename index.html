@@ -45,7 +45,7 @@
             margin-bottom: 10px;
         }
 
-        input[type="text"], input[type="submit"] {
+        input[type="text"], input[type="submit"], button {
             width: calc(100% - 22px);
             padding: 10px;
             margin: 5px 0;
@@ -55,18 +55,18 @@
             transition: transform 0.3s ease;
         }
 
-        input[type="text"]:focus, input[type="submit"]:focus {
+        input[type="text"]:focus, input[type="submit"]:focus, button:focus {
             transform: scale(1.1);
         }
 
-        input[type="submit"] {
+        input[type="submit"], button {
             background-color: #4682B4;
             color: white;
             cursor: pointer;
             transition: background-color 0.3s ease, color 0.3s ease;
         }
 
-        input[type="submit"]:hover {
+        input[type="submit"]:hover, button:hover {
             background-color: white;
             color: #4682B4;
         }
@@ -93,6 +93,8 @@
             <h2>Diviziuni Salvate</h2>
             <ul id="savedDivisionsList"></ul>
             <input type="submit" value="Salvează Diviziunile Ca Șablon" id="saveTemplate">
+            <button id="clearTemplate">Șterge Șablonul</button>
+            <button id="exportTemplate">Exportă ca JSON</button>
         </div>
 
         <!-- Total și calcul -->
@@ -122,11 +124,12 @@
     <script>
         const addButton = document.getElementById('addDivision');
         const saveButton = document.getElementById('saveTemplate');
+        const clearButton = document.getElementById('clearTemplate');
+        const exportButton = document.getElementById('exportTemplate');
         const totalInput = document.getElementById('totalValue');
         const divisionList = document.getElementById('divisionValueList');
         const savedTemplateList = document.getElementById('savedDivisionsList');
 
-        // Adăugare diviziune nouă
         addButton.addEventListener('click', addDivision);
         document.getElementById('percentage').addEventListener('keypress', function (event) {
             if (event.key === 'Enter') addDivision();
@@ -164,8 +167,23 @@
         }
 
         function saveDivisionTemplate() {
-            // Already stored in localStorage via addDivision
-            alert("Șablonul a fost salvat în memoria locală.");
+            alert("Șablonul este deja salvat automat.");
+        }
+
+        function clearDivisionTemplate() {
+            localStorage.removeItem('divisionTemplate');
+            savedTemplateList.innerHTML = '';
+            divisionList.innerHTML = '';
+            alert("Șablonul a fost șters.");
+        }
+
+        function exportDivisionTemplate() {
+            const saved = JSON.parse(localStorage.getItem('divisionTemplate')) || [];
+            const blob = new Blob([JSON.stringify(saved, null, 2)], { type: "application/json" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "diviziuni.json";
+            link.click();
         }
 
         function displaySavedTemplate() {
@@ -179,6 +197,8 @@
         }
 
         saveButton.addEventListener('click', saveDivisionTemplate);
+        clearButton.addEventListener('click', clearDivisionTemplate);
+        exportButton.addEventListener('click', exportDivisionTemplate);
 
         window.onload = function () {
             displaySavedTemplate();
