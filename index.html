@@ -5,18 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Blog Personal</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Animație fade-in personalizată */
+    @keyframes fade-in {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in {
+      animation: fade-in 1s ease-out forwards;
+    }
+  </style>
 </head>
-<body class="m-0 p-0 font-sans">
-  <div class="relative w-full min-h-screen bg-black overflow-hidden">
+<body class="m-0 p-0 font-sans bg-black">
+  <div class="relative w-full min-h-screen overflow-hidden">
     
-    <!-- Fundal cu imagine și gradient -->
+    <!-- Fundal imagine + gradient + blur -->
     <div class="absolute inset-0 z-0">
       <img
-        src="me.jpg"
+        src="mixer.jpg"
         alt="Mixer digital"
-        class="w-full h-full object-cover"
+        class="w-full h-full object-cover blur-sm"
       />
-      <!-- Gradient: vertical pe mobil, orizontal pe desktop -->
+      <!-- Gradient vertical pe mobil, orizontal pe desktop -->
       <div class="absolute inset-0 
                   bg-gradient-to-b from-transparent via-black/70 to-black 
                   md:bg-gradient-to-r md:from-black/80 md:via-black/60 md:to-transparent">
@@ -24,21 +34,20 @@
     </div>
 
     <!-- Conținut principal -->
-    <div class="relative z-10 flex flex-col-reverse md:flex-row items-center justify-center min-h-screen text-white px-4 md:px-10 py-10 text-center md:text-left">
+    <div class="relative z-10 flex flex-col-reverse md:flex-row items-center justify-center min-h-screen text-white px-4 md:px-10 py-10 text-center md:text-left animate-fade-in">
       
-      <!-- Text sus pe mobil, stânga pe desktop -->
+      <!-- Text sus pe telefon, stânga pe desktop -->
       <div class="w-full md:w-1/2 md:pr-10 mt-6 md:mt-0">
-        <h1 class="text-3xl md:text-4xl font-bold mb-4">Bine ai venit pe blogul meu</h1>
         <p class="text-lg max-w-md mx-auto md:mx-0">
           Mă numesc Mitrofan Filip, am 19 ani și sunt pasionat de tot ce înseamnă sunet, în special de procesul de mixaj și mastering. Mă atrage modul în care detaliile fine și deciziile creative pot transforma o piesă audio într-o experiență completă. Îmi place să experimentez cu diferite stiluri și tehnici, mereu în căutarea acelui sunet clar, echilibrat și profesionist.
         </p>
       </div>
 
-      <!-- Imagine rotundă: jos pe mobil, centru pe desktop -->
+      <!-- Imagine rotundă jos pe telefon, mijloc pe desktop -->
       <div class="flex flex-col items-center w-full md:w-auto">
         <div class="w-48 h-48 md:w-64 md:h-64 rounded-full overflow-hidden border-4 border-white shadow-2xl mb-4">
           <img
-            src="IMG_7540_jpg.JPG"
+            src="me.JPG"
             alt="Poza ta"
             class="w-full h-full object-cover"
           />
