@@ -30,54 +30,6 @@
     .animate-zoom {
       animation: zoom 20s ease-in-out infinite alternate;
     }
-
-    /* Animație bară spectru audio cu pauză */
-    @keyframes audio-bar-pause {
-      0%, 10% { height: 1.25rem; }
-      50% { height: 3.5rem; }
-      90%, 100% { height: 1.25rem; }
-    }
-
-    .audio-bar {
-      background-color: white;
-      width: 2px;
-      margin: 0;
-      border-radius: 9999px;
-      animation-name: audio-bar-pause;
-      animation-timing-function: ease-in-out;
-      animation-iteration-count: infinite;
-      will-change: height;
-      transform-origin: bottom center;
-      backface-visibility: hidden;
-      -webkit-transform: translateZ(0);
-      /* durata și delay vor fi setate din JS pentru variație */
-    }
-
-    .audio-bars-container {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 3.5rem;
-      display: flex;
-      align-items: flex-end;
-      justify-content: flex-start;
-      gap: 0;
-      padding: 0;
-      opacity: 0.25;
-      z-index: 0;
-      overflow: hidden;
-    }
-
-    /* Mobil - bare groase */
-    @media (max-width: 768px) {
-      .audio-bars-container {
-        height: 2.8rem;
-      }
-      .audio-bar {
-        width: 8px;
-      }
-    }
   </style>
 </head>
 <body class="m-0 p-0 font-sans bg-black">
@@ -93,32 +45,6 @@
       <div class="absolute inset-0 
                   bg-gradient-to-b from-transparent via-black/60 to-black/40 
                   md:bg-gradient-to-r md:from-black/80 md:via-black/60 md:to-transparent">
-      </div>
-
-      <!-- Bare spectru audio -->
-      <div class="audio-bars-container" aria-hidden="true">
-        <script>
-          const container = document.currentScript.parentNode;
-          const isMobile = window.innerWidth <= 768;
-          const numBars = isMobile 
-            ? Math.floor(window.innerWidth / 8) 
-            : Math.floor(window.innerWidth / 2);
-          for (let i = 0; i < numBars; i++) {
-            const bar = document.createElement('div');
-            bar.className = 'audio-bar';
-
-            // Durata aleatoare între 3.5 și 6 secunde
-            const duration = (3.5 + Math.random() * 2.5).toFixed(2);
-
-            // Delay aleatoriu între 0 și durata animației
-            const delay = (Math.random() * duration).toFixed(2);
-
-            bar.style.animationDuration = `${duration}s`;
-            bar.style.animationDelay = `${delay}s`;
-
-            container.appendChild(bar);
-          }
-        </script>
       </div>
     </div>
 
