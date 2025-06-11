@@ -2,17 +2,44 @@
 <html lang="ro">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Mitrofan Filip</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
+    /* Fade-in cu delay */
     @keyframes fade-in {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
     .animate-fade-in {
+      opacity: 0;
       animation: fade-in 1s ease-out forwards;
     }
+    .delay-150 {
+      animation-delay: 0.15s;
+    }
+    .delay-300 {
+      animation-delay: 0.3s;
+    }
+
+    /* Zoom lent fundal */
+    @keyframes zoom {
+      0% { transform: scale(1.1); }
+      100% { transform: scale(1.15); }
+    }
+    .animate-zoom {
+      animation: zoom 20s ease-in-out infinite alternate;
+    }
+
+    /* Puls audio */
+    @keyframes pulse-bar {
+      0%, 100% { height: 1.5rem; opacity: 0.3; }
+      50% { height: 3rem; opacity: 1; }
+    }
+    .animate-pulse {
+      animation: pulse-bar 1.2s ease-in-out infinite;
+    }
+
   </style>
 </head>
 <body class="m-0 p-0 font-sans bg-black">
@@ -23,26 +50,35 @@
       <img
         src="mixer.jpg"
         alt="Mixer digital"
-        class="w-full h-full object-cover blur-sm scale-110"
+        class="w-full h-full object-cover blur-sm scale-110 animate-zoom"
       />
       <div class="absolute inset-0 
                   bg-gradient-to-b from-transparent via-black/60 to-black/40 
                   md:bg-gradient-to-r md:from-black/80 md:via-black/60 md:to-transparent">
       </div>
+
+      <!-- Bare puls audio -->
+      <div class="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex gap-1 z-0 opacity-30">
+        <div class="w-1 h-6 bg-white rounded animate-pulse delay-[0s]"></div>
+        <div class="w-1 h-8 bg-white rounded animate-pulse delay-[0.1s]"></div>
+        <div class="w-1 h-4 bg-white rounded animate-pulse delay-[0.2s]"></div>
+        <div class="w-1 h-6 bg-white rounded animate-pulse delay-[0.3s]"></div>
+        <div class="w-1 h-5 bg-white rounded animate-pulse delay-[0.4s]"></div>
+      </div>
     </div>
 
     <!-- Conținut principal -->
-    <div class="relative z-10 flex flex-col-reverse md:flex-row items-center justify-center h-screen text-white px-4 md:px-10 py-4 md:py-6 text-center md:text-left animate-fade-in">
+    <div class="relative z-10 flex flex-col-reverse md:flex-row items-center justify-center h-screen text-white px-4 md:px-10 py-4 md:py-6 text-center md:text-left">
 
       <!-- Text -->
-      <div class="w-full md:w-1/2 md:pr-10 mt-4 md:mt-0">
+      <div class="w-full md:w-1/2 md:pr-10 mt-4 md:mt-0 animate-fade-in delay-300">
         <p class="text-base md:text-xl max-w-md md:max-w-lg mx-auto md:mx-0">
           Mă numesc Mitrofan Filip, am 19 ani și sunt pasionat de tot ce înseamnă sunet, în special de procesul de mixaj și mastering. Mă atrage modul în care detaliile fine și deciziile creative pot transforma o piesă audio într-o experiență completă. Îmi place să experimentez cu diferite stiluri și tehnici, mereu în căutarea acelui sunet clar, echilibrat și profesionist.
         </p>
       </div>
 
-      <!-- Imagine rotundă cu efect blur la hover -->
-      <div class="flex flex-col items-center w-full md:w-auto">
+      <!-- Imagine rotundă cu hover -->
+      <div class="flex flex-col items-center w-full md:w-auto animate-fade-in delay-150">
         <div class="relative group mt-4 md:mt-0 mb-4">
           <div class="relative w-48 h-48 md:w-80 md:h-80 rounded-full overflow-hidden z-10 shadow-[0_0_80px_rgba(0,0,0,0.4)]">
             <img
@@ -50,9 +86,10 @@
               alt="Poza ta"
               class="w-full h-full object-cover transition duration-300 ease-in-out group-hover:blur-sm"
             />
-            <!-- Text pe hover -->
-            <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300">
-              <span class="text-white text-xl font-semibold">Mitrofan Filip</span>
+            <!-- Text pe hover cu backdrop blur -->
+            <div class="absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition duration-500 bg-black/30 backdrop-blur-sm rounded-full">
+              <span class="text-white text-3xl font-bold animate-fade-in">Mitrofan Filip</span>
+              <span class="text-sm text-gray-300 mt-1 animate-fade-in">Mix & Mastering with soul</span>
             </div>
           </div>
         </div>
