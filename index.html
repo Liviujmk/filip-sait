@@ -6,7 +6,7 @@
   <title>Mitrofan Filip</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    /* Fade-in cu delay */
+    /* Fade-in */
     @keyframes fade-in {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
@@ -31,29 +31,28 @@
       animation: zoom 20s ease-in-out infinite alternate;
     }
 
-    /* Animatie spectru audio - mișcare calmă și lină */
-    @keyframes audio-bar {
-      0%, 100% { height: 1.25rem; }
-      50% { height: 2.75rem; }
+    /* Animație bară spectru audio cu pauză */
+    @keyframes audio-bar-pause {
+      0%, 10% { height: 1.25rem; }
+      50% { height: 3.5rem; }
+      90%, 100% { height: 1.25rem; }
     }
 
     .audio-bar {
       background-color: white;
-      width: 2px; /* desktop: bare subțiri */
+      width: 2px;
       margin: 0;
       border-radius: 9999px;
-      animation-name: audio-bar;
-      animation-duration: 3.5s;
+      animation-name: audio-bar-pause;
       animation-timing-function: ease-in-out;
       animation-iteration-count: infinite;
-      animation-direction: alternate;
-      will-change: height, transform;
+      will-change: height;
       transform-origin: bottom center;
       backface-visibility: hidden;
       -webkit-transform: translateZ(0);
+      /* durata și delay vor fi setate din JS pentru variație */
     }
 
-    /* Container bare - pe toată lățimea jos, fără gap */
     .audio-bars-container {
       position: absolute;
       bottom: 0;
@@ -62,7 +61,7 @@
       height: 3.5rem;
       display: flex;
       align-items: flex-end;
-      justify-content: flex-start; /* aliniază barele de la stânga */
+      justify-content: flex-start;
       gap: 0;
       padding: 0;
       opacity: 0.25;
@@ -70,13 +69,13 @@
       overflow: hidden;
     }
 
-    /* Responsive mobil - bare groase, fără gap */
+    /* Mobil - bare groase */
     @media (max-width: 768px) {
       .audio-bars-container {
         height: 2.8rem;
       }
       .audio-bar {
-        width: 8px; /* bare groase pe mobil */
+        width: 8px;
       }
     }
   </style>
@@ -96,18 +95,27 @@
                   md:bg-gradient-to-r md:from-black/80 md:via-black/60 md:to-transparent">
       </div>
 
-      <!-- Bare spectru audio pe toată lățimea -->
+      <!-- Bare spectru audio -->
       <div class="audio-bars-container" aria-hidden="true">
         <script>
           const container = document.currentScript.parentNode;
-          const numBarsDesktop = Math.floor(window.innerWidth / 2); // bare subțiri pe desktop
-          const numBarsMobile = Math.floor(window.innerWidth / 8); // bare groase pe mobil
-
-          const numBars = window.innerWidth <= 768 ? numBarsMobile : numBarsDesktop;
-
+          const isMobile = window.innerWidth <= 768;
+          const numBars = isMobile 
+            ? Math.floor(window.innerWidth / 8) 
+            : Math.floor(window.innerWidth / 2);
           for (let i = 0; i < numBars; i++) {
             const bar = document.createElement('div');
             bar.className = 'audio-bar';
+
+            // Durata aleatoare între 3.5 și 6 secunde
+            const duration = (3.5 + Math.random() * 2.5).toFixed(2);
+
+            // Delay aleatoriu între 0 și durata animației
+            const delay = (Math.random() * duration).toFixed(2);
+
+            bar.style.animationDuration = `${duration}s`;
+            bar.style.animationDelay = `${delay}s`;
+
             container.appendChild(bar);
           }
         </script>
@@ -133,7 +141,6 @@
               alt="Poza ta"
               class="w-full h-full object-cover transition duration-300 ease-in-out group-hover:blur-sm"
             />
-            <!-- Text pe hover cu backdrop blur -->
             <div class="absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition duration-500 bg-black/30 backdrop-blur-sm rounded-full">
               <span class="text-white text-3xl font-bold animate-fade-in">Mitrofan Filip</span>
               <span class="text-sm text-gray-300 mt-1 animate-fade-in">Mix & Mastering</span>
