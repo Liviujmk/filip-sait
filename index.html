@@ -39,8 +39,8 @@
 
     .audio-bar {
       background-color: white;
-      width: 6px;
-      margin: 0 1px;
+      width: 2px; /* desktop: bare subțiri */
+      margin: 0;
       border-radius: 9999px;
       animation-name: audio-bar;
       animation-duration: 3.5s;
@@ -53,7 +53,7 @@
       -webkit-transform: translateZ(0);
     }
 
-    /* Container bare - pe toată lățimea jos, fără padding */
+    /* Container bare - pe toată lățimea jos, fără gap */
     .audio-bars-container {
       position: absolute;
       bottom: 0;
@@ -62,23 +62,21 @@
       height: 3.5rem;
       display: flex;
       align-items: flex-end;
-      justify-content: space-between;
-      gap: 2px;
-      padding: 0 4px;
+      justify-content: flex-start; /* aliniază barele de la stânga */
+      gap: 0;
+      padding: 0;
       opacity: 0.25;
       z-index: 0;
+      overflow: hidden;
     }
 
-    /* Responsive mobil - bare mai late și mai înalte */
+    /* Responsive mobil - bare groase, fără gap */
     @media (max-width: 768px) {
       .audio-bars-container {
         height: 2.8rem;
-        padding: 0 8px;
-        gap: 2px;
       }
       .audio-bar {
-        width: 10px;
-        animation-duration: 4.5s;
+        width: 8px; /* bare groase pe mobil */
       }
     }
   </style>
@@ -102,13 +100,14 @@
       <div class="audio-bars-container" aria-hidden="true">
         <script>
           const container = document.currentScript.parentNode;
-          const numBars = 70; // mai puține pentru spațiu mai uniform
+          const numBarsDesktop = Math.floor(window.innerWidth / 2); // bare subțiri pe desktop
+          const numBarsMobile = Math.floor(window.innerWidth / 8); // bare groase pe mobil
+
+          const numBars = window.innerWidth <= 768 ? numBarsMobile : numBarsDesktop;
+
           for (let i = 0; i < numBars; i++) {
             const bar = document.createElement('div');
             bar.className = 'audio-bar';
-            // Animare cu delay aleatoriu între 0 și durata animației (3.5s mobil 4.5s)
-            const maxDuration = window.innerWidth <= 768 ? 4.5 : 3.5;
-            bar.style.animationDelay = (Math.random() * maxDuration).toFixed(2) + 's';
             container.appendChild(bar);
           }
         </script>
@@ -137,7 +136,7 @@
             <!-- Text pe hover cu backdrop blur -->
             <div class="absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition duration-500 bg-black/30 backdrop-blur-sm rounded-full">
               <span class="text-white text-3xl font-bold animate-fade-in">Mitrofan Filip</span>
-              <span class="text-sm text-gray-300 mt-1 animate-fade-in">Mix & Masterin with soul</span>
+              <span class="text-sm text-gray-300 mt-1 animate-fade-in">Mix & Mastering</span>
             </div>
           </div>
         </div>
