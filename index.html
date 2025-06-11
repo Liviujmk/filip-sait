@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Mitrofan Filip</title>
+  <title>Mitrofan Filip - Sunetist</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     /* Fade-in cu delay */
@@ -31,15 +31,23 @@
       animation: zoom 20s ease-in-out infinite alternate;
     }
 
-    /* Puls audio */
-    @keyframes pulse-bar {
-      0%, 100% { height: 1.5rem; opacity: 0.3; }
-      50% { height: 3rem; opacity: 1; }
-    }
-    .animate-pulse {
-      animation: pulse-bar 1.2s ease-in-out infinite;
+    /* Animatie spectru audio - schimbare aleatorie inaltime */
+    @keyframes audio-bar {
+      0%, 100% { height: 0.75rem; }
+      50% { height: 3rem; }
     }
 
+    .audio-bar {
+      background-color: white;
+      width: 4px;
+      margin: 0 2px;
+      border-radius: 9999px;
+      animation-name: audio-bar;
+      animation-duration: 1.2s;
+      animation-timing-function: ease-in-out;
+      animation-iteration-count: infinite;
+      animation-direction: alternate;
+    }
   </style>
 </head>
 <body class="m-0 p-0 font-sans bg-black">
@@ -57,13 +65,19 @@
                   md:bg-gradient-to-r md:from-black/80 md:via-black/60 md:to-transparent">
       </div>
 
-      <!-- Bare puls audio -->
-      <div class="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex gap-1 z-0 opacity-30">
-        <div class="w-1 h-6 bg-white rounded animate-pulse delay-[0s]"></div>
-        <div class="w-1 h-8 bg-white rounded animate-pulse delay-[0.1s]"></div>
-        <div class="w-1 h-4 bg-white rounded animate-pulse delay-[0.2s]"></div>
-        <div class="w-1 h-6 bg-white rounded animate-pulse delay-[0.3s]"></div>
-        <div class="w-1 h-5 bg-white rounded animate-pulse delay-[0.4s]"></div>
+      <!-- Bare spectru audio pe toată lățimea -->
+      <div class="absolute bottom-0 left-0 right-0 flex items-end justify-center gap-1 z-0 opacity-30 px-2" style="height: 3.5rem;">
+        <!-- Generăm 80 de bare ca exemplu -->
+        <script>
+          const container = document.currentScript.parentNode;
+          for (let i = 0; i < 80; i++) {
+            const bar = document.createElement('div');
+            bar.className = 'audio-bar';
+            // Animare cu delay aleatoriu între 0 și 1.2s
+            bar.style.animationDelay = (Math.random() * 1.2).toFixed(2) + 's';
+            container.appendChild(bar);
+          }
+        </script>
       </div>
     </div>
 
@@ -89,7 +103,7 @@
             <!-- Text pe hover cu backdrop blur -->
             <div class="absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition duration-500 bg-black/30 backdrop-blur-sm rounded-full">
               <span class="text-white text-3xl font-bold animate-fade-in">Mitrofan Filip</span>
-              <span class="text-sm text-gray-300 mt-1 animate-fade-in">Mix & Mastering with soul</span>
+              <span class="text-sm text-gray-300 mt-1 animate-fade-in">Mix & Mastering</span>
             </div>
           </div>
         </div>
