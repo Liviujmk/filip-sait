@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Mitrofan Filip - Sunetist</title>
+  <title>Mitrofan Filip</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     /* Fade-in cu delay */
@@ -31,45 +31,54 @@
       animation: zoom 20s ease-in-out infinite alternate;
     }
 
-    /* Animatie spectru audio - schimbare aleatorie inaltime */
+    /* Animatie spectru audio - mișcare calmă și lină */
     @keyframes audio-bar {
-      0%, 100% { height: 0.75rem; }
-      50% { height: 3rem; }
+      0%, 100% { height: 1.25rem; }
+      50% { height: 2.75rem; }
     }
 
     .audio-bar {
       background-color: white;
-      width: 4px;
-      margin: 0 2px;
+      width: 6px;
+      margin: 0 1px;
       border-radius: 9999px;
       animation-name: audio-bar;
-      animation-duration: 1.2s;
-      animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1); /* mișcare smooth */
+      animation-duration: 3.5s;
+      animation-timing-function: ease-in-out;
       animation-iteration-count: infinite;
       animation-direction: alternate;
-      will-change: height, transform; /* optimizează pe GPU */
+      will-change: height, transform;
       transform-origin: bottom center;
-      /* hardware acceleration */
       backface-visibility: hidden;
       -webkit-transform: translateZ(0);
     }
 
-    /* Container bare - adaptiv pe mobil */
+    /* Container bare - pe toată lățimea jos, fără padding */
     .audio-bars-container {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
       height: 3.5rem;
-      padding-left: 0.5rem;
-      padding-right: 0.5rem;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
       gap: 2px;
+      padding: 0 4px;
+      opacity: 0.25;
+      z-index: 0;
     }
+
+    /* Responsive mobil - bare mai late și mai înalte */
     @media (max-width: 768px) {
       .audio-bars-container {
-        height: 2.5rem;
-        gap: 1px;
+        height: 2.8rem;
+        padding: 0 8px;
+        gap: 2px;
       }
       .audio-bar {
-        width: 3px;
-        margin: 0 1px;
-        animation-duration: 1.4s; /* puțin mai lent pe mobil */
+        width: 10px;
+        animation-duration: 4.5s;
       }
     }
   </style>
@@ -90,15 +99,16 @@
       </div>
 
       <!-- Bare spectru audio pe toată lățimea -->
-      <div class="absolute bottom-0 left-0 right-0 flex items-end justify-center audio-bars-container z-0 opacity-30">
-        <!-- Generăm 80 de bare ca exemplu -->
+      <div class="audio-bars-container" aria-hidden="true">
         <script>
           const container = document.currentScript.parentNode;
-          for (let i = 0; i < 80; i++) {
+          const numBars = 70; // mai puține pentru spațiu mai uniform
+          for (let i = 0; i < numBars; i++) {
             const bar = document.createElement('div');
             bar.className = 'audio-bar';
-            // Animare cu delay aleatoriu între 0 și 1.2s
-            bar.style.animationDelay = (Math.random() * 1.2).toFixed(2) + 's';
+            // Animare cu delay aleatoriu între 0 și durata animației (3.5s mobil 4.5s)
+            const maxDuration = window.innerWidth <= 768 ? 4.5 : 3.5;
+            bar.style.animationDelay = (Math.random() * maxDuration).toFixed(2) + 's';
             container.appendChild(bar);
           }
         </script>
@@ -127,7 +137,7 @@
             <!-- Text pe hover cu backdrop blur -->
             <div class="absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition duration-500 bg-black/30 backdrop-blur-sm rounded-full">
               <span class="text-white text-3xl font-bold animate-fade-in">Mitrofan Filip</span>
-              <span class="text-sm text-gray-300 mt-1 animate-fade-in">Mix & Mastering with soul</span>
+              <span class="text-sm text-gray-300 mt-1 animate-fade-in">Mix & Masterin with soul</span>
             </div>
           </div>
         </div>
