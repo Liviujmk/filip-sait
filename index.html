@@ -1,81 +1,714 @@
+
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Mitrofan Filip</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    /* Fade-in */
-    @keyframes fade-in {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .animate-fade-in {
-      opacity: 0;
-      animation: fade-in 1s ease-out forwards;
-    }
-    .delay-150 {
-      animation-delay: 0.15s;
-    }
-    .delay-300 {
-      animation-delay: 0.3s;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Studiu de Caz eMAG - Leadership Extins</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+/* 1. THE SETUP - Corporate Retail Theme */
 
-    /* Zoom lent fundal */
-    @keyframes zoom {
-      0% { transform: scale(1.1); }
-      100% { transform: scale(1.15); }
-    }
-    .animate-zoom {
-      animation: zoom 20s ease-in-out infinite alternate;
-    }
-  </style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #f0f2f5;
+  display: grid;
+  gap: 20px;
+  grid-template-columns: 1fr;
+  margin: 0;
+  min-height: 100vh;
+  padding: 20px 0;
+  place-items: center;
+}
+
+.slide-container {
+  align-items: center;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  height: 720px;
+  justify-content: center;
+  overflow: hidden;
+  padding: 60px;
+  position: relative;
+  width: 1280px;
+}
+
+/* Background Design - Subtle Abstract Curves */
+.slide-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(0, 94, 184, 0.05) 0%, rgba(239, 33, 38, 0.03) 100%);
+  clip-path: ellipse(80% 90% at 80% 10%);
+  z-index: 0;
+}
+
+.slide-container::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 30%;
+  height: 60%;
+  background: linear-gradient(135deg, rgba(0, 94, 184, 0.03) 0%, rgba(239, 33, 38, 0.02) 100%);
+  clip-path: ellipse(70% 60% at 10% 90%);
+  z-index: 0;
+}
+
+.slide-container > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* 2. TYPOGRAPHY */
+
+.slide-container h1,
+.slide-container h2,
+.slide-container h3 {
+  color: #0f172a; /* Slate 900 */
+  font-family: 'Roboto', sans-serif;
+  font-weight: 700;
+  margin: 0;
+}
+
+.slide-container p,
+.slide-container li,
+.slide-container .subtitle,
+.slide-container .chart-summary,
+.slide-container td,
+.slide-container th {
+  color: #334155; /* Slate 700 */
+  font-family: 'Open Sans', sans-serif;
+  line-height: 1.6;
+}
+
+/* Specific Sizes */
+.slide-container h1 {
+  font-size: 56px;
+  color: #005eb8; /* Corporate Blue */
+  margin-bottom: 20px;
+}
+
+.slide-container .slide-title {
+  font-size: 42px;
+  color: #005eb8;
+  margin-bottom: 40px;
+  width: 100%;
+  border-bottom: 3px solid #ef2126; /* Corporate Red Accent */
+  padding-bottom: 15px;
+}
+
+.slide-container h3 {
+  font-size: 24px;
+  margin-bottom: 15px;
+  color: #1e293b;
+}
+
+.slide-container p, 
+.slide-container li {
+  font-size: 18px;
+}
+
+.slide-container .subtitle {
+  font-size: 24px;
+  font-weight: 300;
+  color: #64748b;
+  margin-bottom: 30px;
+}
+
+/* 3. LAYOUT SPECIFICS */
+
+.content-area {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  justify-content: center;
+  width: 100%;
+}
+
+.text-slide-content {
+    max-width: 1000px;
+    width: 100%;
+}
+
+.two-column {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  width: 100%;
+  align-items: start;
+}
+
+.two-column.tiled > div {
+  background-color: #f8fafc;
+  border-left: 5px solid #005eb8;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.tiled-content {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+  justify-content: center;
+}
+
+.tile {
+  flex: 1;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  transition: transform 0.2s;
+}
+
+.tile .icon {
+  color: #ef2126; /* Red Accent */
+  font-size: 36px;
+  margin-bottom: 15px;
+}
+
+/* Chart Styles */
+.bar .bar-fill {
+  background: linear-gradient(90deg, #005eb8, #2563eb);
+}
+
+.doughnut-chart-container {
+  gap: 60px;
+}
+
+/* List Styling */
+ul {
+  padding-left: 20px;
+}
+
+li {
+  margin-bottom: 12px;
+}
+
+.bullet-list li strong {
+  color: #005eb8;
+}
+
+.bullet-list i {
+  color: #ef2126;
+}
+
+/* Title Slide Specifics */
+.title-layout {
+  text-align: center;
+  max-width: 900px;
+  margin: 0 auto;
+}
+.university-header {
+  font-size: 18px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #64748b;
+  margin-bottom: 30px;
+  font-weight: 700;
+}
+.student-info {
+  margin-top: 50px;
+  font-size: 18px;
+  color: #334155;
+}
+
+/* Timeline specific styles */
+.timeline-container {
+    position: relative;
+    padding: 20px 0;
+    width: 100%;
+}
+.timeline-line {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 100%;
+    background-color: #005eb8;
+    top: 0;
+}
+.timeline-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    width: 100%;
+}
+.timeline-item:nth-child(even) {
+    flex-direction: row-reverse;
+}
+.timeline-content {
+    width: 45%;
+    background: #f8fafc;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid #ef2126;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+.timeline-date {
+    width: 45%;
+    text-align: right;
+    font-weight: bold;
+    color: #005eb8;
+    font-size: 24px;
+}
+.timeline-item:nth-child(even) .timeline-date {
+    text-align: left;
+}
+.timeline-dot {
+    width: 20px;
+    height: 20px;
+    background: #ef2126;
+    border-radius: 50%;
+    border: 4px solid white;
+    box-shadow: 0 0 0 2px #005eb8;
+    z-index: 2;
+}
+
+/* References Slide */
+.references-list {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+.references-list li {
+    font-size: 14px;
+    background: #f1f5f9;
+    padding: 10px;
+    border-radius: 6px;
+    color: #334155;
+}
+
+    </style>
 </head>
-<body class="m-0 p-0 font-sans bg-black">
-  <div class="relative w-full h-screen overflow-hidden">
+<body>
 
-    <!-- Fundal imagine + gradient + zoom -->
-    <div class="absolute inset-0 z-0">
-      <img
-        src="mixer.jpg"
-        alt="Mixer digital"
-        class="w-full h-full object-cover blur-sm scale-110 animate-zoom"
-      />
-      <div class="absolute inset-0 
-                  bg-gradient-to-b from-transparent via-black/60 to-black/40 
-                  md:bg-gradient-to-r md:from-black/80 md:via-black/60 md:to-transparent">
-      </div>
-    </div>
-
-    <!-- Conținut principal -->
-    <div class="relative z-10 flex flex-col-reverse md:flex-row items-center justify-center h-screen text-white px-4 md:px-10 py-4 md:py-6 text-center md:text-left">
-
-      <!-- Text -->
-      <div class="w-full md:w-1/2 md:pr-10 mt-4 md:mt-0 animate-fade-in delay-300">
-        <p class="text-base md:text-xl max-w-md md:max-w-lg mx-auto md:mx-0">
-          Mă numesc Mitrofan Filip, am 19 ani și sunt pasionat de tot ce înseamnă sunet, în special de procesul de mixaj și mastering. Mă atrage modul în care detaliile fine și deciziile creative pot transforma o piesă audio într-o experiență completă. Îmi place să experimentez cu diferite stiluri și tehnici, mereu în căutarea acelui sunet clar, echilibrat și profesionist.
-        </p>
-      </div>
-
-      <!-- Imagine rotundă cu hover -->
-      <div class="flex flex-col items-center w-full md:w-auto animate-fade-in delay-150">
-        <div class="relative group mt-4 md:mt-0 mb-4">
-          <div class="relative w-48 h-48 md:w-80 md:h-80 rounded-full overflow-hidden z-10 shadow-[0_0_80px_rgba(0,0,0,0.4)]">
-            <img
-              src="me.JPG"
-              alt="Poza ta"
-              class="w-full h-full object-cover transition duration-300 ease-in-out group-hover:blur-sm"
-            />
-            <div class="absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition duration-500 bg-black/30 backdrop-blur-sm rounded-full">
-              <span class="text-white text-3xl font-bold animate-fade-in">Mitrofan Filip</span>
-              <span class="text-sm text-gray-300 mt-1 animate-fade-in">Mix & Mastering</span>
-            </div>
-          </div>
+<!-- Slide 1: Title Slide -->
+<div class="slide-container" id="slide1">
+    <div class="title-layout">
+        <div class="university-header">Universitatea Ștefan cel Mare Suceava<br>Facultatea de Economie, Administrație și Afaceri</div>
+        <h1>Rolul Leadership-ului în Performanța Organizațională</h1>
+        <p class="subtitle">Studiu de caz: Compania eMAG (România)</p>
+        <div class="student-info">
+            <p><strong>Specializarea:</strong> Informatică Economică, Anul II</p>
+            <p><strong>Coordonator:</strong> Simona Buta</p>
+            <p><strong>Studenți:</strong> Mitrofan Filip și Vasileniuc Ciprian</p>
         </div>
-      </div>
-
     </div>
-  </div>
+</div>
+
+<!-- Slide 2: Agenda -->
+<div class="slide-container" id="slide2">
+    <h2 class="slide-title">Cuprinsul Prezentării</h2>
+    <div class="content-area">
+        <div class="two-column tiled">
+            <div>
+                <h3>1. Aspecte Teoretice</h3>
+                <ul>
+                    <li>Conceptul de Leadership vs. Management</li>
+                    <li>Modele Teoretice (Grila Managerială & Leadership Situațional)</li>
+                    <li>Cultura Organizațională</li>
+                </ul>
+            </div>
+            <div>
+                <h3>2. Studiu de Caz: eMAG</h3>
+                <ul>
+                    <li>Profilul Companiei & Istoric</li>
+                    <li>Analiza Financiară</li>
+                    <li>Strategia & Ecosistemul</li>
+                    <li>Inovare, Criză și Cultură</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 3: Theory - Manager vs Leader -->
+<div class="slide-container" id="slide3">
+    <h2 class="slide-title">1.1 Leadership vs. Management</h2>
+    <div class="content-area">
+        <div class="text-slide-content">
+            <h3>Diferențe Fundamentale</h3>
+            <p>O distincție esențială în teoria organizațională:</p>
+            <ul>
+                <li><strong>Managerul:</strong> Se concentrează pe complexitate, planificare, bugetare și control. Aduce ordine și consistență.</li>
+                <li><strong>Liderul:</strong> Se concentrează pe schimbare, viziune de viitor și motivarea oamenilor.</li>
+            </ul>
+            <br>
+            <p><em>"Managerii fac lucrurile cum trebuie (do things right), liderii fac lucrurile care trebuie (do the right things)."</em> — Warren Bennis</p>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 4: Theory - Managerial Grid -->
+<div class="slide-container" id="slide4">
+    <h2 class="slide-title">1.2 Grila Managerială (Blake și Mouton)</h2>
+    <div class="content-area">
+        <div class="tiled-content">
+            <div class="tile">
+                <div class="icon"><i class="fa-solid fa-user-minus"></i></div>
+                <h3>1.1 Sărăcit</h3>
+                <p>Efort minim pentru oameni și rezultate.</p>
+            </div>
+            <div class="tile">
+                <div class="icon"><i class="fa-solid fa-people-carry-box"></i></div>
+                <h3>9.1 Autoritar</h3>
+                <p>Accent maxim pe eficiență, ignorând nevoile umane.</p>
+            </div>
+             <div class="tile">
+                <div class="icon"><i class="fa-solid fa-umbrella-beach"></i></div>
+                <h3>1.9 Club de vacanță</h3>
+                <p>Atmosferă prietenoasă, dar productivitate scăzută.</p>
+            </div>
+            <div class="tile">
+                <div class="icon"><i class="fa-solid fa-users"></i></div>
+                <h3>9.9 Echipă</h3>
+                <p>Idealul: Performanță înaltă prin angajament.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 5: Theory - Situational Leadership -->
+<div class="slide-container" id="slide5">
+    <h2 class="slide-title">1.2 Leadership-ul Situațional</h2>
+    <div class="content-area">
+        <div class="text-slide-content">
+            <h3>Adaptabilitatea Liderului</h3>
+            <p>Conform modelului Hersey și Blanchard, liderul trebuie să își adapteze stilul în funcție de nivelul de maturitate profesională al subordonaților:</p>
+            <ul>
+                <li><strong>S1 - Directiv:</strong> Pentru începători (Maturitate scăzută).</li>
+                <li><strong>S2 - Convingător:</strong> Explică deciziile și oferă clarificări.</li>
+                <li><strong>S3 - Participativ:</strong> Împarte idei și facilitează decizii.</li>
+                <li><strong>S4 - Delegativ:</strong> Pentru experți (Maturitate ridicată).</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 6: Theory - Organizational Culture -->
+<div class="slide-container" id="slide6">
+    <h2 class="slide-title">1.3 Cultura Organizațională</h2>
+    <div class="content-area">
+        <div class="text-slide-content">
+            <h3>Liderii ca "Arhitecți"</h3>
+            <p>Edgar Schein definește cultura ca un model de prezumții de bază. Liderii modelează cultura prin:</p>
+            <ul>
+                <li><strong>Mecanisme Primare:</strong> Ceea ce liderii monitorizează, măsoară și controlează sistematic. Reacțiile lor la crize.</li>
+                <li><strong>Mecanisme Secundare:</strong> Structura organizațională, sistemele de recompensare și procedurile interne.</li>
+            </ul>
+            <p>Valorile transmise devin norme de comportament pentru angajați.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 7: Theory - Performance & VUCA -->
+<div class="slide-container" id="slide7">
+    <h2 class="slide-title">1.4 Leadership & Performanță</h2>
+    <div class="content-area">
+        <div class="text-slide-content">
+            <h3>Mediul VUCA</h3>
+            <p>Studiile empirice arată o corelație pozitivă între <strong>Leadership-ul Transformațional</strong> și performanța financiară.</p>
+            <p>Într-un mediu volatil (VUCA - Volatility, Uncertainty, Complexity, Ambiguity), capacitatea liderului de a gestiona incertitudinea devine cel mai important predictor al succesului.</p>
+            <p>Liderii care inspiră viziune cresc angajamentul afectiv, reduc fluctuația de personal și cresc productivitatea.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 8: Company Profile (NO IMAGE) -->
+<div class="slide-container" id="slide8">
+    <h2 class="slide-title">2.1 Fișa Companiei: Dante International S.A.</h2>
+    <div class="content-area">
+        <div class="two-column tiled">
+            <div>
+                <h3>Identificare</h3>
+                <ul>
+                    <li><strong>Brand Comercial:</strong> eMAG</li>
+                    <li><strong>Formă Juridică:</strong> Societate pe Acțiuni (S.A.)</li>
+                    <li><strong>Sediul Social:</strong> Voluntari, Ilfov (Parcul de Birouri Swan)</li>
+                    <li><strong>Cod CAEN:</strong> 4791 - Comerț cu amănuntul prin Internet</li>
+                </ul>
+            </div>
+            <div>
+                <h3>Poziție & Istoric</h3>
+                <ul>
+                    <li><strong>Statut:</strong> Lider regional în eCommerce (România, Bulgaria, Ungaria).</li>
+                    <li><strong>Moment Cheie (2012):</strong> Grupul Naspers (azi Prosus) devine acționar majoritar.</li>
+                    <li><strong>Evoluție:</strong> Transformare din "IT Shop" în "General Retailer" și platformă de tehnologie.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 9: History Timeline -->
+<div class="slide-container" id="slide9">
+    <h2 class="slide-title">2.2 Repere Istorice Majore</h2>
+    <div class="content-area">
+        <div class="timeline-container">
+            <div class="timeline-line"></div>
+            
+            <div class="timeline-item">
+                <div class="timeline-date">2001</div>
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">Lansarea ca magazin online de IT&C.</div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-date">2009</div>
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">Iulian Stanciu preia pachetul majoritar (Asesoft). Schimbare viziune spre "General Retailer".</div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-date">2011 & 2012</div>
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">Prima ediție Black Friday. Grupul Naspers (Prosus) achiziționează 70%.</div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-date">2021</div>
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">Tudor Manea devine CEO. Tranziție spre guvernanță corporativă matură.</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 10: Shareholders (NO IMAGE) -->
+<div class="slide-container" id="slide10">
+    <h2 class="slide-title">2.3 Structura Acționariatului</h2>
+    <div class="content-area">
+        <div class="two-column tiled">
+            <div>
+                <h3>Prosus N.V. (aprox. 80%)</h3>
+                <p>Divizia de tehnologie a grupului Naspers.</p>
+                <br>
+                <ul>
+                    <li><strong>Rol:</strong> Unul dintre cei mai mari investitori în tehnologie din lume.</li>
+                    <li><strong>Aport:</strong> Capital pentru expansiune regională și expertiză globală.</li>
+                </ul>
+            </div>
+            <div>
+                <h3>Iulian Stanciu (aprox. 20%)</h3>
+                <p>Președinte Executiv eMAG.</p>
+                <br>
+                <ul>
+                    <li><strong>Rol:</strong> Asigură viziunea locală și continuitatea strategică.</li>
+                    <li><strong>Stil:</strong> Antreprenorial, orientat spre creștere și inovație.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 11: Financials -->
+<div class="slide-container" id="slide11">
+    <h2 class="slide-title">2.4 Evoluția Financiară</h2>
+    <div class="content-area">
+        <div class="chart-container">
+            <div class="bar">
+                <div class="label">2019</div>
+                <div class="bar-inner"><div class="bar-fill" style="width: 56%;">4.56 mld. RON</div></div>
+            </div>
+            <div class="bar">
+                <div class="label">2020</div>
+                <div class="bar-inner"><div class="bar-fill" style="width: 83%;">6.72 mld. RON</div></div>
+            </div>
+            <div class="bar">
+                <div class="label">2021</div>
+                <div class="bar-inner"><div class="bar-fill" style="width: 91%;">7.35 mld. RON</div></div>
+            </div>
+            <div class="bar">
+                <div class="label">2022</div>
+                <div class="bar-inner"><div class="bar-fill" style="width: 88%;">7.12 mld. RON</div></div>
+            </div>
+            <div class="bar">
+                <div class="label">2023 (Est.)</div>
+                <div class="bar-inner"><div class="bar-fill" style="width: 100%;">8.05 mld. RON</div></div>
+            </div>
+        </div>
+        <p class="chart-summary">Fluctuațiile profitului sunt rezultatul strategiei de investiții (Capex) în infrastructură (Ex: 2021 - Investiții Easybox).</p>
+    </div>
+</div>
+
+<!-- Slide 12: Leadership Style Analysis -->
+<div class="slide-container" id="slide12">
+    <h2 class="slide-title">3.1 Evoluția Stilului de Leadership</h2>
+    <div class="content-area">
+        <div class="text-slide-content">
+            <p><strong>Etapa 1: Antreprenorial-Vizionar (Iulian Stanciu)</strong><br>
+            Caracterizat prin "High Risk - High Reward". Viziune curajoasă și implicare operațională directă.</p>
+            <br>
+            <p><strong>Etapa 2: Transformațional-Strategic (Tudor Manea)</strong><br>
+            Accent pe date (Data-Driven Leadership), consolidare și extinderea ecosistemului. Succesiunea a fost planificată (Manea crescut intern 15 ani), asigurând continuitatea culturii.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 13: Strategic Ecosystem -->
+<div class="slide-container" id="slide13">
+    <h2 class="slide-title">3.2 Ecosistemul eMAG</h2>
+    <div class="content-area">
+        <div class="text-slide-content">
+            <h3>Logistică și Infrastructură</h3>
+            <p>Leadership-ul a înțeles că bătălia se dă pe "timpul clientului".</p>
+            <ul>
+                <li><strong>Moat Economic:</strong> Rețeaua Easybox (4000+ unități) și Sameday. Internalizarea logisticii pentru controlul calității.</li>
+                <li><strong>Marketplace:</strong> Transformarea în platformă deschisă.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 14: Crisis Management -->
+<div class="slide-container" id="slide14">
+    <h2 class="slide-title">3.3 Leadership în Criză (COVID-19)</h2>
+    <div class="content-area">
+        <div class="text-slide-content">
+            <h3>Trei Măsuri Critice</h3>
+            <ul>
+                <li><strong>Siguranța:</strong> Trecerea a 3000+ angajați în telemuncă în câteva zile.</li>
+                <li><strong>Adaptarea ofertei:</strong> Focus pe produse sanitare și home-office, devenind furnizor de infrastructură critică.</li>
+                <li><strong>Susținerea partenerilor:</strong> Programul "Deschide România" pentru IMM-urile afectate de lockdown.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 15: eMAG Ventures -->
+<div class="slide-container" id="slide15">
+    <h2 class="slide-title">3.4 Leadership Investițional</h2>
+    <div class="content-area">
+        <div class="text-slide-content">
+            <p>Prin divizia eMAG Ventures, compania integrează și scalează noi business-uri:</p>
+            <br>
+            <p><strong>Tazz:</strong> Transformarea EuCeMananc într-un jucător național major de livrare, dovadă a capacității de a scala business-uri mici.</p>
+            <br>
+            <p><strong>Flip.ro:</strong> Investiție în piața telefoanelor recondiționate. Arată un leadership atent la trendurile de sustenabilitate și economie circulară.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 16: Innovation -->
+<div class="slide-container" id="slide16">
+    <h2 class="slide-title">3.5 Rolul Liderilor în Inovare</h2>
+    <div class="content-area">
+        <div class="tiled-content">
+            <div class="tile">
+                <div class="icon"><i class="fa-solid fa-tags"></i></div>
+                <h3>Black Friday</h3>
+                <p>Importarea conceptului în 2011 a educat piața locală către plățile online.</p>
+            </div>
+            <div class="tile">
+                <div class="icon"><i class="fa-solid fa-bolt"></i></div>
+                <h3>Genius</h3>
+                <p>Adaptarea modelului Amazon Prime. Retenție prin alinierea logistică-marketing.</p>
+            </div>
+            <div class="tile">
+                <div class="icon"><i class="fa-solid fa-carrot"></i></div>
+                <h3>Freshful</h3>
+                <p>Strategie "Blue Ocean" pe piața de groceries, cu depozite frigorifice dedicate.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 17: Organizational Culture -->
+<div class="slide-container" id="slide17">
+    <h2 class="slide-title">3.6 Cultură: Freedom to Experiment</h2>
+    <div class="content-area">
+        <div class="text-slide-content">
+            <h3>Data Driven Culture</h3>
+            <p>Performanța se bazează pe o cultură a meritocrației.</p>
+            <ul>
+                <li><strong>Slogan:</strong> "Greșește repede și învață".</li>
+                <li><strong>Obiectivitate:</strong> Deciziile se iau pe baza datelor (Excel/Tableau), nu a opiniilor subiective.</li>
+                <li><strong>Rezultat:</strong> Reducerea politicii interne și focalizarea pe rezultate concrete.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 18: Conclusions -->
+<div class="slide-container" id="slide18">
+    <h2 class="slide-title">4.1 Concluzii</h2>
+    <div class="content-area">
+        <div class="bullet-list">
+            <ul>
+                <li><i class="fa-solid fa-check-circle"></i> <strong>Vector de Performanță:</strong> Leadership-ul este motorul principal, nu doar suport.</li>
+                <li><i class="fa-solid fa-check-circle"></i> <strong>Viziune-Execuție:</strong> Ideile bune au fost susținute de mecanisme operaționale excelente.</li>
+                <li><i class="fa-solid fa-check-circle"></i> <strong>Rezistența la Criză:</strong> Scalabilitate demonstrată în pandemie.</li>
+                <li><i class="fa-solid fa-check-circle"></i> <strong>Tranziție:</strong> De la vânzarea de produse la ecosistem de servicii.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 19: Proposals -->
+<div class="slide-container" id="slide19">
+    <h2 class="slide-title">4.2 Propuneri de Îmbunătățire</h2>
+    <div class="content-area">
+        <div class="tiled-content">
+            <div class="tile">
+                <div class="icon"><i class="fa-solid fa-leaf"></i></div>
+                <h3>Sustenabilitate (ESG)</h3>
+                <p>Reducerea amprentei de carbon (ambalaje) și standarde stricte pentru parteneri.</p>
+            </div>
+            <div class="tile">
+                <div class="icon"><i class="fa-solid fa-headset"></i></div>
+                <h3>Human Touch</h3>
+                <p>Echilibrarea boților AI cu empatia umană în Customer Care.</p>
+            </div>
+            <div class="tile">
+                <div class="icon"><i class="fa-solid fa-heart-pulse"></i></div>
+                <h3>Gestionare Burnout</h3>
+                <p>Traininguri de inteligență emoțională pentru lideri, având în vedere ritmul alert.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 20: References -->
+<div class="slide-container" id="slide20">
+    <h2 class="slide-title">5. Referințe Bibliografice</h2>
+    <div class="content-area">
+        <ul class="references-list">
+            <li><strong>Băcanu, B. (2018).</strong> Management strategic, Editura Teora, București.</li>
+            <li><strong>Blake, R.R., Mouton, J.S. (1964).</strong> The Managerial Grid: The Key to Leadership Excellence, Gulf Publishing.</li>
+            <li><strong>Goleman, D. (2018).</strong> Inteligența emoțională în leadership, Editura Curtea Veche Publishing, București.</li>
+            <li><strong>Hersey, P., Blanchard, K.H. (1969).</strong> Management of Organizational Behavior, Prentice Hall.</li>
+            <li><strong>Năstase, M. (2007).</strong> Lideri, leadership şi organizaţii, Editura ASE, București.</li>
+            <li><strong>Nicolescu, O., Verboncu, I. (2008).</strong> Fundamentele managementului organizației, Editura Universitară, București.</li>
+            <li><strong>Northouse, P. G. (2018).</strong> Leadership: Theory and Practice, Sage Publications.</li>
+            <li><strong>Schein, E. H. (2010).</strong> Organizational Culture and Leadership, Jossey-Bass.</li>
+            <li><strong>Dante International S.A. (2020-2023).</strong> Situații Financiare Anuale publicate pe mfinante.ro.</li>
+            <li><strong>Ziarul Financiar (2021).</strong> Schimbare istorică la vârful eMAG: Iulian Stanciu devine preşedinte executiv.</li>
+            <li><strong>eMAG Corporate (2023).</strong> Rapoarte de sustenabilitate și comunicate de presă. Disponibil la: about.emag.ro</li>
+        </ul>
+    </div>
+</div>
+
 </body>
 </html>
+```
