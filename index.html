@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UUUUUUU</title>
+    <title>Pentru tine</title>
     <style>
         /* Stilurile pentru pagină */
         body {
@@ -13,7 +13,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            background-color: #ffeff5; /* Fundal roz deschis (îl poți lăsa așa sau modifica) */
+            background-color: #ffeff5; 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             text-align: center;
             overflow: hidden;
@@ -24,12 +24,12 @@
             background: white;
             padding: 40px 60px;
             border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(255, 152, 0, 0.2); /* Umbră ușor portocalie */
+            box-shadow: 0 10px 30px rgba(255, 152, 0, 0.2); 
             transition: opacity 0.5s;
         }
 
         h1 {
-            color: #ff9800; /* Titlu portocaliu */
+            color: #ff9800; 
             margin-bottom: 20px;
             font-size: 2rem;
         }
@@ -37,7 +37,7 @@
         input {
             padding: 12px 20px;
             font-size: 18px;
-            border: 2px solid #ffcc80; /* Margine portocaliu deschis */
+            border: 2px solid #ffcc80; 
             border-radius: 8px;
             outline: none;
             width: 80%;
@@ -46,14 +46,14 @@
         }
 
         input:focus {
-            border-color: #ff9800; /* Marginea devine portocaliu închis când scrii */
+            border-color: #ff9800; 
         }
 
         button {
             padding: 12px 30px;
             font-size: 18px;
             color: white;
-            background-color: #ff9800; /* Buton portocaliu */
+            background-color: #ff9800; 
             border: none;
             border-radius: 8px;
             cursor: pointer;
@@ -74,20 +74,18 @@
         }
 
         .heart {
-            color: #ff9800; /* Culoare portocalie pentru inimă */
+            color: #ff9800; 
             font-size: 6rem;
             margin-bottom: 20px;
             opacity: 0;
-            /* Inima apare târziu, apoi începe să bată */
             animation: fadeIn 1.5s forwards 0.5s, heartbeat 1.2s infinite 2s;
         }
 
         .love-text {
             font-size: 3.5rem;
-            color: #e68a00; /* Portocaliu închis pentru text */
+            color: #e68a00; 
             font-weight: bold;
             opacity: 0;
-            /* Textul apare treptat */
             animation: fadeIn 2s forwards 1s;
         }
 
@@ -97,7 +95,6 @@
             color: #b36b00;
             font-style: italic;
             opacity: 0;
-            /* Semnătura apare la final */
             animation: fadeIn 2s forwards 2.5s;
         }
 
@@ -132,24 +129,35 @@
     </div>
 
     <script>
-        // Funcția care face trecerea între ecrane
         function startAnimation() {
             // Preluăm numele din căsuța de text
-            const name = document.getElementById('nameInput').value.trim();
+            const rawName = document.getElementById('nameInput').value.trim();
             
+            // Transformăm numele în litere mici pentru a verifica mai ușor (ca să meargă și dacă scrie "LARISA" sau "larisa")
+            const nameLowerCase = rawName.toLowerCase();
+            
+            // Lista cu numele permise
+            const allowedNames = ["larisa", "lari", "ecaterina"];
+
             // Verificăm dacă a introdus un nume
-            if (name === "") {
+            if (rawName === "") {
                 alert("Te rog să introduci un nume!");
                 return;
             }
 
-            // Punem numele în textul animației
-            document.getElementById('displayName').innerText = name;
+            // Verificăm dacă numele introdus se află în lista de nume permise
+            if (!allowedNames.includes(nameLowerCase)) {
+                alert("Nume greșit! Acest mesaj este rezervat doar pentru o anumită persoană. 😉");
+                return;
+            }
+
+            // Punem numele (așa cum l-a scris ea prima dată) în textul animației
+            document.getElementById('displayName').innerText = rawName;
 
             // Ascundem prima secțiune
             document.getElementById('input-section').style.display = 'none';
             
-            // Afișăm a doua secțiune (animația pornește automat din CSS)
+            // Afișăm a doua secțiune
             document.getElementById('animation-section').style.display = 'flex';
         }
 
