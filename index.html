@@ -3,130 +3,163 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generator Red Flags în Business</title>
+    <title>UUUUUUU</title>
     <style>
+        /* Stilurile pentru pagină */
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7f6;
-            color: #333;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
             display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #ffeff5; /* Fundal roz deschis (îl poți lăsa așa sau modifica) */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        /* Fereastra de introducere a numelui */
+        #input-section {
+            background: white;
+            padding: 40px 60px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(255, 152, 0, 0.2); /* Umbră ușor portocalie */
+            transition: opacity 0.5s;
+        }
+
+        h1 {
+            color: #ff9800; /* Titlu portocaliu */
+            margin-bottom: 20px;
+            font-size: 2rem;
+        }
+
+        input {
+            padding: 12px 20px;
+            font-size: 18px;
+            border: 2px solid #ffcc80; /* Margine portocaliu deschis */
+            border-radius: 8px;
+            outline: none;
+            width: 80%;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        input:focus {
+            border-color: #ff9800; /* Marginea devine portocaliu închis când scrii */
+        }
+
+        button {
+            padding: 12px 30px;
+            font-size: 18px;
+            color: white;
+            background-color: #ff9800; /* Buton portocaliu */
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        button:hover {
+            background-color: #e68a00;
+            transform: scale(1.05);
+        }
+
+        /* Secțiunea cu animația de iubire */
+        #animation-section {
+            display: none;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            padding: 20px;
         }
-        .container {
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            max-width: 600px;
-            width: 100%;
+
+        .heart {
+            color: #ff9800; /* Culoare portocalie pentru inimă */
+            font-size: 6rem;
+            margin-bottom: 20px;
+            opacity: 0;
+            /* Inima apare târziu, apoi începe să bată */
+            animation: fadeIn 1.5s forwards 0.5s, heartbeat 1.2s infinite 2s;
         }
-        h1 {
-            color: #d9534f;
-            text-align: center;
-            font-size: 24px;
+
+        .love-text {
+            font-size: 3.5rem;
+            color: #e68a00; /* Portocaliu închis pentru text */
+            font-weight: bold;
+            opacity: 0;
+            /* Textul apare treptat */
+            animation: fadeIn 2s forwards 1s;
         }
-        p.subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 25px;
+
+        .footer {
+            margin-top: 50px;
+            font-size: 1.5rem;
+            color: #b36b00;
+            font-style: italic;
+            opacity: 0;
+            /* Semnătura apare la final */
+            animation: fadeIn 2s forwards 2.5s;
         }
-        ul {
-            list-style-type: none;
-            padding: 0;
+
+        /* Definiția animațiilor */
+        @keyframes fadeIn {
+            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; transform: translateY(20px); }
         }
-        li {
-            background-color: #fff3f3;
-            border-left: 5px solid #d9534f;
-            margin-bottom: 15px;
-            padding: 15px;
-            border-radius: 4px;
-            font-size: 16px;
-            line-height: 1.5;
-        }
-        .btn {
-            display: block;
-            width: 100%;
-            padding: 12px;
-            background-color: #d9534f;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: background-color 0.3s;
-        }
-        .btn:hover {
-            background-color: #c9302c;
+
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            15% { transform: scale(1.3); }
+            30% { transform: scale(1); }
+            45% { transform: scale(1.3); }
+            60%, 100% { transform: scale(1); }
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>🚩 Semnale de Alarmă în Business</h1>
-    <p class="subtitle">Atenție la aceste 3 detalii nonverbale în următoarea ta întâlnire:</p>
-    
-    <ul id="flagList">
-        </ul>
+    <div id="input-section">
+        <h1>Enter your name</h1>
+        <input type="text" id="nameInput" placeholder="Numele aici..." autocomplete="off">
+        <br>
+        <button onclick="startAnimation()">Enter</button>
+    </div>
 
-    <button class="btn" onclick="genereazaRedFlags()">Generează alte 3 semnale</button>
-</div>
+    <div id="animation-section">
+        <div class="heart">🧡</div>
+        <div class="love-text">I love you, <span id="displayName"></span>!</div>
+        <div class="footer">By Filip</div>
+    </div>
 
-<script>
-    const redFlags = [
-        "<strong>Bariere fizice:</strong> Ținerea unui obiect (laptop, mapă, cană) strâns la piept (defensivă).",
-        "<strong>Fidgeting:</strong> Jocul constant cu pixul, inelul sau părul (anxietate, lipsă de pregătire).",
-        "<strong>Zâmbetul Pan Am:</strong> Zâmbet fals, doar din buze, fără implicarea ochilor (politețe forțată).",
-        "<strong>Brațele încrucișate strâns:</strong> Mai ales dacă pumnii sunt strânși (rezistență sau dezacord).",
-        "<strong>Atingerea bazei gâtului:</strong> Frecarea cefei sau ajustarea cravatei (comportament de calmare/stres).",
-        "<strong>Evitarea bruscă a contactului vizual:</strong> Ruperea ritmului vizual (ascunderea unui adevăr/disconfort).",
-        "<strong>Clipitul excesiv:</strong> Creștere bruscă a ratei de clipire (stres cognitiv sau emoțional intens).",
-        "<strong>Micro-expresia de dispreț:</strong> Ridicarea asimetrică a unui colț al gurii (superioritate/respingere).",
-        "<strong>Ascunderea mâinilor:</strong> Sub masă sau în buzunare (creierul o percepe ca lipsă de transparență).",
-        "<strong>Retragerea bruscă pe scaun:</strong> Lăsarea bruscă pe spătar (refuz fizic, distanțare).",
-        "<strong>Efectul de „țestoasă”:</strong> Ridicarea umerilor spre urechi și coborârea capului (nesiguranță).",
-        "<strong>Orientarea picioarelor spre ușă:</strong> Trunchiul e spre tine, picioarele spre ieșire (dorința de a pleca).",
-        "<strong>Gleznele încrucișate și strânse:</strong> Sub scaun (ancorare fizică, reținere emoțională, tensiune).",
-        "<strong>Blocarea vizuală:</strong> Acoperirea ochilor cu mâna sau închiderea prelungită (refuzul informației).",
-        "<strong>Culegerea scamelor imaginare:</strong> Curățarea hainelor privind în jos (dezaprobare tăcută, ignorare).",
-        "<strong>Strângerea maxilarului:</strong> Pulsarea mușchilor feței (furie reținută, frustrare).",
-        "<strong>Verificarea repetată a ceasului/telefonului:</strong> (Lipsă de respect, nerăbdare, dezangajare).",
-        "<strong>Strângerea buzelor:</strong> Presate până devin o linie subțire (reținerea unei opinii negative).",
-        "<strong>Strângerea de mână „pește mort”:</strong> Moale și fără energie (nesiguranță, neimplicare).",
-        "<strong>Respirația superficială:</strong> Schimbare bruscă a ritmului (panică la o întrebare incomodă)."
-    ];
+    <script>
+        // Funcția care face trecerea între ecrane
+        function startAnimation() {
+            // Preluăm numele din căsuța de text
+            const name = document.getElementById('nameInput').value.trim();
+            
+            // Verificăm dacă a introdus un nume
+            if (name === "") {
+                alert("Te rog să introduci un nume!");
+                return;
+            }
 
-    function genereazaRedFlags() {
-        // Amestecăm array-ul (Fisher-Yates shuffle)
-        let shuffled = [...redFlags];
-        for (let i = shuffled.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            // Punem numele în textul animației
+            document.getElementById('displayName').innerText = name;
+
+            // Ascundem prima secțiune
+            document.getElementById('input-section').style.display = 'none';
+            
+            // Afișăm a doua secțiune (animația pornește automat din CSS)
+            document.getElementById('animation-section').style.display = 'flex';
         }
-        
-        // Luăm primele 3 elemente
-        let selectate = shuffled.slice(0, 3);
-        
-        // Le afișăm în HTML
-        let listaHtml = document.getElementById("flagList");
-        listaHtml.innerHTML = ""; // curățăm lista veche
-        
-        selectate.forEach(flag => {
-            let li = document.createElement("li");
-            li.innerHTML = flag;
-            listaHtml.appendChild(li);
+
+        // Permitem apăsarea tastei Enter pentru a trimite numele
+        document.getElementById("nameInput").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                startAnimation();
+            }
         });
-    }
-
-    // Generăm primele 3 flag-uri când se încarcă pagina
-    window.onload = genereazaRedFlags;
-</script>
-
+    </script>
 </body>
 </html>
