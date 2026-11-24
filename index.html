@@ -1,163 +1,260 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>La mulți ani, Daniel!</title>
-<style>
-:root{color-scheme:dark;--bg:#1a0f2e;--card:#261848;--line:#4b3a8f;--tx:#fff6ee;--mut:#b9aee0;--ac:#ffc857;--pk:#ff6fae;--ok:#6ee7a8;--bad:#ff7a90;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-*{box-sizing:inherit}
-html,body{margin:0}
-body{background:radial-gradient(circle at 15% 0,#5a2a8f 0,transparent 45%),radial-gradient(circle at 90% 25%,#a23a7a55 0,transparent 40%),var(--bg);color:var(--tx);font:16px/1.5 system-ui,sans-serif;min-height:100vh;overflow-x:hidden}
-main{max-width:760px;margin:0 auto;padding:24px 16px 60px;position:relative;z-index:2}
-h1{text-align:center;font-size:2.1rem;margin:.2em 0;background:linear-gradient(90deg,var(--ac),var(--pk));-webkit-background-clip:text;background-clip:text;color:transparent}
-.cake{text-align:center;font-size:3rem;animation:b 2s ease-in-out infinite}
-@keyframes b{50%{transform:translateY(-8px)}}
-.sub{text-align:center;color:var(--mut);margin-bottom:22px}
-.prog{text-align:center;color:var(--ac);letter-spacing:6px;margin-bottom:14px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:18px;box-shadow:0 8px 30px #0007}
-.card.locked{display:none}
-h2{margin:0 0 8px;font-size:1.15rem}
-.code{display:flex;flex-wrap:wrap;gap:6px;font-size:1.6rem;margin:12px 0;padding:12px;background:#140b2a;border-radius:10px;justify-content:center}
-.legend{display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:8px;margin:12px 0}
-.legend div{background:#140b2a;border:1px solid var(--line);border-radius:10px;padding:6px;text-align:center;font-size:1.25rem}
-.legend small{display:block;color:var(--mut);font-size:.68rem;min-height:1em}
-.legend b{font-family:ui-monospace,Menlo,monospace;color:var(--ac)}
-input{width:100%;padding:12px;border-radius:10px;border:2px solid var(--line);background:#140b2a;color:var(--tx);font:1.05rem ui-monospace,Menlo,monospace}
-input:focus{outline:none;border-color:var(--pk)}
-input.ok{border-color:var(--ok)}input.bad{border-color:var(--bad)}
-.big{font:700 1.2rem ui-monospace,Menlo,monospace;text-align:center;letter-spacing:2px;padding:14px;background:#140b2a;border-radius:10px;margin:12px 0;word-break:break-all;color:var(--ac);user-select:all}
-.row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
-button,.btn{background:linear-gradient(90deg,var(--ac),var(--pk));color:#2a1200;border:0;border-radius:10px;padding:10px 16px;font:700 1rem system-ui;cursor:pointer;text-decoration:none;display:inline-block}
-button.g{background:transparent;color:var(--ac);border:1px solid var(--ac)}
-.msg{min-height:1.4em;margin-top:8px;font-size:.95rem}
-#fin{text-align:center;display:none;border:2px solid var(--ac)}
-#fin h2{font-size:2rem}
-#fin .btn{font-size:1.2rem;padding:14px 26px;margin-top:10px}
-.bal{position:fixed;bottom:-80px;font-size:2.4rem;z-index:1;opacity:.55;animation:up linear infinite}
-@keyframes up{to{transform:translateY(-120vh) rotate(15deg)}}
-canvas{position:fixed;inset:0;pointer-events:none;z-index:5}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Partajare Ecran Live</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 20px 16px;
+      background: #0f1115;
+      color: #f3f4f6;
+    }
+    h2 { margin-top: 0; font-size: 20px; }
+    .card {
+      background: #181b21;
+      border: 1px solid #2a2f3a;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+    input {
+      background: #0f1115;
+      color: #fff;
+      border: 1px solid #374151;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 15px;
+      flex: 1;
+      min-width: 150px;
+    }
+    button {
+      padding: 10px 16px;
+      border-radius: 8px;
+      border: none;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    button:hover { opacity: 0.9; }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-primary { background: #2563eb; color: #fff; }
+    .btn-success { background: #16a34a; color: #fff; }
+    .btn-secondary { background: #374151; color: #fff; }
+    #status {
+      font-size: 14px;
+      color: #9ca3af;
+      margin-top: 12px;
+      padding: 8px 12px;
+      background: #0f1115;
+      border-radius: 6px;
+      border-left: 3px solid #2563eb;
+    }
+    video {
+      width: 100%;
+      max-height: 78vh;
+      background: #000;
+      border-radius: 12px;
+      border: 1px solid #2a2f3a;
+      display: block;
+    }
+  </style>
 </head>
 <body>
-<main>
-<div class="cake">🎂</div>
-<h1>La mulți ani, Daniel!</h1>
-<p class="sub">Ai primit o tema acasa mai grea . Descifreaza si vezi ce este </p>
-<div class="prog" id="prog">◇ ◇ ◇</div>
 
-<section class="card" id="s1">
-<h2>Etapa 1 · Limbajul simbolurilor</h2>
-<p>Acest cod a fost creat special pentru tine. Caută fiecare simbol în tabel și scrie literele în ordine. Atenție la litere mari și mici.</p>
-<div class="code" id="code"></div>
-<div class="legend" id="leg1"></div>
-<input id="i1" placeholder="Literele obținute…" autocomplete="off" autocapitalize="off" spellcheck="false">
-<div class="row"><button onclick="check(1)">Verifică</button></div>
-<div class="msg" id="m1"></div>
-</section>
+  <div class="card">
+    <h2>Partajare Ecran Live</h2>
+    <div class="controls">
+      <input id="roomInput" type="text" placeholder="Cod cameră" />
+      <button id="copyLinkBtn" class="btn-secondary" type="button">Copiază link invitație</button>
+      <button id="shareBtn" class="btn-success" type="button">Partajează ecranul (iPhone)</button>
+      <button id="viewBtn" class="btn-primary" type="button">Vizionează (MacBook)</button>
+    </div>
+    <div id="status">Se inițializează conexiunea cu serverul...</div>
+  </div>
 
-<section class="card locked" id="s2">
-<h2>Etapa 2 · Al doilea cifru</h2>
-<p>Ia literele din etapa 1 și înlocuiește fiecare literă cu semnul din noua cheie. Etichetele te ajută să deosebești caracterele asemănătoare.</p>
-<div class="legend" id="leg2"></div>
-<input id="i2" placeholder="Rezultatul…" autocomplete="off" autocapitalize="off" spellcheck="false">
-<div class="row"><button onclick="check(2)">Verifică</button></div>
-<div class="msg" id="m2"></div>
-</section>
+  <video id="remoteVideo" autoplay playsinline controls></video>
 
-<section class="card locked" id="s3">
-<h2>Etapa 3 · Oglinda</h2>
-<p>Ce ai obținut în etapa 2 are un înțeles, dar este scris în oglindă. Citește-l de la dreapta la stânga și scrie-l corect în căsuța de mai jos.</p>
-<div class="big" id="mir"></div>
-<input id="i3" placeholder="Mesajul corect…" autocomplete="off" autocapitalize="off" spellcheck="false">
-<div class="row"><button onclick="check(3)">Verifică</button></div>
-<div class="msg" id="m3"></div>
-</section>
+  <!-- Socket.IO Client din CDN -->
+  <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+  <script>
+    // =========================================================================
+    // ÎNLOCUIEȘTE CU URL-UL SERVERULUI TĂU DE SEMNALIZARE (ex. de pe Render)
+    // =========================================================================
+    const SIGNALING_SERVER_URL = "https://SERVERUL-TAU.onrender.com";
 
-<section class="card" id="fin">
-<h2>🎉 La mulți ani, Daniel! 🎉</h2>
-<p>Ai descifrat mesajul! Îți dorim sănătate, bucurii și multe realizări. Surpriza te așteaptă:</p>
-<div id="finact"></div>
-</section>
-</main>
-<canvas id="cv"></canvas>
+    const socket = io(SIGNALING_SERVER_URL, {
+      transports: ["websocket", "polling"]
+    });
 
-<script>
-//#LOGIC
-const SECRET = "https://youtu.be/SYKwg_dMcYk", SEED = 20261111; // SECRET = destinația finală
-let _s = SEED; const rnd = () => { _s = (_s * 1664525 + 1013904223) % 4294967296; return _s / 4294967296; };
-const shuf = a => { a = [...a]; for (let i = a.length - 1; i > 0; i--) { const j = rnd() * (i + 1) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; };
-const rev = [...SECRET].reverse().join("");
-const uc = shuf([...new Set(rev)]);
-const LET = shuf([..."ABCDEFGHJKMNPRSTUVWXYZ23456789abdefghkmnprstuwxyz"]);
-const c2l = {}; uc.forEach((c, i) => c2l[c] = LET[i]);
-const I = [...rev].map(c => c2l[c]).join("");
-const ul = shuf([...new Set(I)]);
-const SYM = shuf([..."★☀☾♠♣♥♦♪☂✿✂☎⚑⚓✈☘☢☯♞♛⚡❄✦✚⬢◆▲●■◐◑◒☗♨✪☄⚘⌘⚙☕♫✧☠"]);
-const l2s = {}; ul.forEach((l, i) => l2s[l] = SYM[i]);
-const ans = {1: I, 2: rev, 3: SECRET};
-//#END
+    const roomInput = document.getElementById("roomInput");
+    const copyLinkBtn = document.getElementById("copyLinkBtn");
+    const shareBtn = document.getElementById("shareBtn");
+    const viewBtn = document.getElementById("viewBtn");
+    const statusEl = document.getElementById("status");
+    const videoEl = document.getElementById("remoteVideo");
 
-const $ = id => document.getElementById(id);
-const NAMES = {"I":"i mare","l":"L mic","0":"zero","O":"o mare","o":"o mic","1":"unu","/":"slash",".":"punct",":":"două puncte","-":"cratimă","?":"semn întrebare","=":"egal","_":"underscore","&":"ampersand"};
-const lab = c => NAMES[c] || (/[a-z]/.test(c) ? "mic" : /[A-Z]/.test(c) ? "mare" : "");
-const esc = c => c.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+    // Preia codul camerei din URL (?room=abc) sau generează unul aleatoriu
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialRoom = urlParams.get("room") || "cam-" + Math.random().toString(36).substring(2, 7);
+    roomInput.value = initialRoom;
 
-$("code").innerHTML = [...I].map(l => "<span>" + l2s[l] + "</span>").join("");
-$("leg1").innerHTML = shuf(ul).map(l => "<div>" + l2s[l] + "<small>↓</small><b>" + l + "</b><small>" + lab(l) + "</small></div>").join("");
-$("leg2").innerHTML = shuf(uc).map(c => "<div><b>" + c2l[c] + "</b><small>" + lab(c2l[c]) + "</small><small>↓</small>" + esc(c) + "<small>" + lab(c) + "</small></div>").join("");
+    const rtcConfig = {
+      iceServers: [
+        { urls: "stun:stun.l.google.com:19302" },
+        { urls: "stun:stun1.l.google.com:19302" }
+      ]
+    };
 
-$("mir").textContent = rev;
-const norm = v => v.replace(/\s+/g, "");
-const hints = {1: 0, 2: 0, 3: 0};
-function hint(n) {
-  hints[n] = Math.min(ans[n].length, hints[n] + 3);
-  $("i" + n).value = ans[n].slice(0, hints[n]);
-  $("m" + n).style.color = "var(--mut)";
-  $("m" + n).textContent = "Primele " + hints[n] + " caractere sunt completate. Continuă tu.";
-}
+    let localStream = null;
+    const peers = new Map();
+    let currentRole = null;
 
-function check(n) {
-  const inp = $("i" + n), m = $("m" + n);
-  if (norm(inp.value) === ans[n]) {
-    inp.className = "ok"; inp.readOnly = true;
-    m.style.color = "var(--ok)"; m.textContent = "Corect!";
-    $("prog").textContent = [1, 2, 3].map(k => k <= n ? "◆" : "◇").join(" ");
-    setTimeout(() => {
-      $("s" + n).style.display = "none";
-      if (n < 3) { $("s" + (n + 1)).classList.remove("locked"); window.scrollTo({top: 0, behavior: "smooth"}); } else win();
-    }, 900);
-  } else {
-    inp.className = "bad"; m.style.color = "var(--bad)"; m.textContent = "Mai încearcă, ceva nu se potrivește.";
-  }
-}
+    function setStatus(msg, color = "#2563eb") {
+      statusEl.textContent = msg;
+      statusEl.style.borderLeftColor = color;
+    }
 
-function win() {
-  $("fin").style.display = "block";
-  const a = document.createElement("a"); a.className = "btn"; a.href = SECRET; a.target = "_blank"; a.rel = "noopener"; a.textContent = "Deschide surpriza 🎁";
-  $("finact").appendChild(a);
-  window.scrollTo({top: 0, behavior: "smooth"});
-  confetti();
-}
+    socket.on("connect", () => {
+      setStatus("Conectat la server. Alege rolul sau trimite linkul.", "#16a34a");
+    });
 
-function confetti() {
-  const cv = $("cv"), x = cv.getContext("2d"); cv.width = innerWidth; cv.height = innerHeight;
-  const cols = ["#ffc857", "#ff6fae", "#6ee7a8", "#7aa8ff", "#d68bff"];
-  const ps = Array.from({length: 200}, () => ({x: Math.random() * cv.width, y: -Math.random() * cv.height, r: 4 + Math.random() * 6, v: 2 + Math.random() * 4, d: Math.random() * 2 - 1, c: cols[Math.random() * 5 | 0]}));
-  let t = 0;
-  (function f() {
-    x.clearRect(0, 0, cv.width, cv.height);
-    ps.forEach(p => { p.y += p.v; p.x += p.d; x.fillStyle = p.c; x.fillRect(p.x, p.y, p.r, p.r * 1.6); });
-    if (++t < 450) requestAnimationFrame(f); else x.clearRect(0, 0, cv.width, cv.height);
-  })();
-}
+    socket.on("connect_error", () => {
+      setStatus("Eroare la conectarea cu serverul de semnalizare. Verifică URL-ul serverului.", "#dc2626");
+    });
 
-["🎈", "🎈", "🎁", "🎈", "🎉", "🎈", "🎁", "🎈"].forEach((e, i) => {
-  const b = document.createElement("div"); b.className = "bal"; b.textContent = e;
-  b.style.left = (6 + i * 12) + "%"; b.style.animationDuration = (12 + (i * 7) % 9) + "s"; b.style.animationDelay = (-i * 2) + "s";
-  document.body.appendChild(b);
-});
-[1, 2, 3].forEach(k => $("i" + k).addEventListener("keydown", e => { if (e.key === "Enter") check(k); }));
-</script>
+    // Copiază linkul direct cu parametrul ?room=...
+    copyLinkBtn.addEventListener("click", async () => {
+      const room = roomInput.value.trim();
+      if (!room) return;
+      const inviteUrl = `${window.location.origin}${window.location.pathname}?room=${encodeURIComponent(room)}`;
+      try {
+        await navigator.clipboard.writeText(inviteUrl);
+        setStatus("Link copiat! Trimite-l prietenului: " + inviteUrl, "#16a34a");
+      } catch {
+        prompt("Copiază acest link:", inviteUrl);
+      }
+    });
+
+    function createPeerConnection(remoteId) {
+      const pc = new RTCPeerConnection(rtcConfig);
+      peers.set(remoteId, pc);
+
+      if (localStream) {
+        localStream.getTracks().forEach((track) => pc.addTrack(track, localStream));
+      }
+
+      pc.ontrack = (event) => {
+        videoEl.srcObject = event.streams[0];
+        setStatus("Primești imaginea live!", "#16a34a");
+      };
+
+      pc.onicecandidate = (event) => {
+        if (event.candidate) {
+          socket.emit("ice-candidate", { to: remoteId, candidate: event.candidate });
+        }
+      };
+
+      pc.onconnectionstatechange = () => {
+        if (pc.connectionState === "disconnected" || pc.connectionState === "failed") {
+          setStatus("Conexiunea video s-a întrerupt.", "#dc2626");
+        }
+      };
+
+      return pc;
+    }
+
+    // Rol: iPhone (cel care dă share screen)
+    shareBtn.addEventListener("click", async () => {
+      const roomId = roomInput.value.trim();
+      if (!roomId) return alert("Introdu un cod de cameră.");
+
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
+        setStatus("Browserul nu suportă partajarea ecranului (necesită Safari iOS 15+ pe HTTPS).", "#dc2626");
+        return;
+      }
+
+      try {
+        localStream = await navigator.mediaDevices.getDisplayMedia({
+          video: { frameRate: { ideal: 30, max: 60 } },
+          audio: false
+        });
+
+        currentRole = "sharer";
+        socket.emit("join-room", { roomId, role: "sharer" });
+        setStatus("Partajezi ecranul în camera: " + roomId, "#16a34a");
+
+        localStream.getVideoTracks()[0].addEventListener("ended", () => {
+          setStatus("Ai oprit partajarea ecranului.", "#eab308");
+          peers.forEach((pc) => pc.close());
+          peers.clear();
+        });
+      } catch (err) {
+        setStatus("Partajare anulată sau blocată: " + err.message, "#dc2626");
+      }
+    });
+
+    // Rol: MacBook (cel care urmărește)
+    viewBtn.addEventListener("click", () => {
+      const roomId = roomInput.value.trim();
+      if (!roomId) return alert("Introdu un cod de cameră.");
+
+      currentRole = "viewer";
+      socket.emit("join-room", { roomId, role: "viewer" });
+      setStatus("Aștepți ca prietenul să pornească partajarea în camera: " + roomId, "#2563eb");
+    });
+
+    // Semnalizare WebRTC
+    socket.on("peer-joined", async ({ id }) => {
+      if (currentRole === "sharer" && localStream) {
+        const pc = createPeerConnection(id);
+        const offer = await pc.createOffer();
+        await pc.setLocalDescription(offer);
+        socket.emit("webrtc-offer", { to: id, offer });
+      }
+    });
+
+    socket.on("webrtc-offer", async ({ from, offer }) => {
+      const pc = createPeerConnection(from);
+      await pc.setRemoteDescription(new RTCSessionDescription(offer));
+      const answer = await pc.createAnswer();
+      await pc.setLocalDescription(answer);
+      socket.emit("webrtc-answer", { to: from, answer });
+    });
+
+    socket.on("webrtc-answer", async ({ from, answer }) => {
+      const pc = peers.get(from);
+      if (pc) {
+        await pc.setRemoteDescription(new RTCSessionDescription(answer));
+      }
+    });
+
+    socket.on("ice-candidate", async ({ from, candidate }) => {
+      const pc = peers.get(from);
+      if (pc && candidate) {
+        await pc.addIceCandidate(new RTCIceCandidate(candidate));
+      }
+    });
+
+    socket.on("peer-left", ({ id }) => {
+      const pc = peers.get(id);
+      if (pc) {
+        pc.close();
+        peers.delete(id);
+      }
+      setStatus("Cealaltă persoană a părăsit camera.", "#eab308");
+    });
+  </script>
 </body>
 </html>

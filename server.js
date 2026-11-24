@@ -1,0 +1,52 @@
+const express = require("express");
+const http = require("http");
+const { Server } = require("socket.io");
+
+const app = express();
+const server = http.createServer(app);
+
+// Permite conexiuni de pe domeniul tău găzduit pe GitHub Pages
+const io = new Server(server, {
+  cors: {
+    origin: "*", // Opțional: poți înlocui "*" cu "https://domeniul-tau.ro" pentru securitate maximă
+    methods: ["GET", "POST"]
+  }
+});
+
+const PORT = process.env.PORT || 3000;
+
+app.get("/", (req, res) => {
+  res.send("Serverul de semnalizare WebRTC este activ.");
+});
+
+io.on("connection", (socket) => {
+  socket.on("join-room", ({ roomId, role }) => {
+    socket.join(roomId);
+    socket.data.roomId = roomId;
+    socket.data.role = role;
+    socket.to(roomId).emit("peer-joined", { id: socket.id, role });
+  });
+
+  socket.on("webrtc-offer", ({ to, offer }) => {
+    io.to(to).emit("webrtc-offer", { from: socket.id, offer });
+  });
+
+  socket.on("webrtc-answer", ({ to, answer }) => {
+    io.to(to).emit("webrtc-answer", { from: socket.id, answer });
+  });
+
+  socket.on("ice-candidate", ({ to, candidate }) => {
+    io.to(to).emit("ice-candidate", { from: socket.id, candidate });
+  });
+
+  socket.on("disconnect", () => {
+    const { roomId } = socket.data;
+    if (roomId) {
+      socket.to(roomId).emit("peer-left", { id: socket.id });
+    }
+  });
+});
+
+server.listen(PORT, () => {
+  console.log(`Serverul ruleaza pe portul ${PORT}`);
+});
