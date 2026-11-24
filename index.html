@@ -226,13 +226,22 @@
       }
     });
 
-    socket.on("peer-joined", async ({ id }) => {
-      if (localStream) {
-        const pc = createPeerConnection(id);
-        const offer = await pc.createOffer();
-        await pc.setLocalDescription(offer);
-        socket.emit("webrtc-offer", { to: id, offer });
+    async function sendOfferTo(remoteId) {
+      if (!localStream) return;
+      const pc = createPeerConnection(remoteId);
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+      socket.emit("webrtc-offer", { to: remoteId, offer });
+    }
+
+    socket.on("existing-peers", async ({ ids }) => {
+      for (const id of ids) {
+        await sendOfferTo(id);
       }
+    });
+
+    socket.on("peer-joined", async ({ id }) => {
+      await sendOfferTo(id);
     });
 
     socket.on("webrtc-offer", async ({ from, offer }) => {
