@@ -45,10 +45,7 @@
       font-size: 14px;
       font-weight: 600;
       cursor: pointer;
-      transition: opacity 0.15s;
     }
-    button:hover { opacity: 0.9; }
-    button:disabled { opacity: 0.5; cursor: not-allowed; }
     .btn-primary { background: #2563eb; color: #fff; }
     .btn-success { background: #16a34a; color: #fff; }
     .btn-secondary { background: #374151; color: #fff; }
@@ -86,13 +83,11 @@
 
   <video id="remoteVideo" autoplay playsinline controls></video>
 
-  <!-- Socket.IO Client din CDN -->
   <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
   <script>
-    // =========================================================================
-    // ÎNLOCUIEȘTE CU URL-UL SERVERULUI TĂU DE SEMNALIZARE (ex. de pe Render)
-    // =========================================================================
-    const SIGNALING_SERVER_URL = "https://SERVERUL-TAU.onrender.com";
+    // PUNE AICI URL-UL SERVERULUI NODE.JS (ex: https://server-semnalizare.onrender.com)
+    // NU pune https://filip-bank.netlify.app/
+    const SIGNALING_SERVER_URL = "https://PUNE-AICI-URL-UL-SERVERULUI-NODE.onrender.com";
 
     const socket = io(SIGNALING_SERVER_URL, {
       transports: ["websocket", "polling"]
@@ -105,7 +100,6 @@
     const statusEl = document.getElementById("status");
     const videoEl = document.getElementById("remoteVideo");
 
-    // Preia codul camerei din URL (?room=abc) sau generează unul aleatoriu
     const urlParams = new URLSearchParams(window.location.search);
     const initialRoom = urlParams.get("room") || "cam-" + Math.random().toString(36).substring(2, 7);
     roomInput.value = initialRoom;
@@ -134,7 +128,6 @@
       setStatus("Eroare la conectarea cu serverul de semnalizare. Verifică URL-ul serverului.", "#dc2626");
     });
 
-    // Copiază linkul direct cu parametrul ?room=...
     copyLinkBtn.addEventListener("click", async () => {
       const room = roomInput.value.trim();
       if (!room) return;
@@ -175,7 +168,6 @@
       return pc;
     }
 
-    // Rol: iPhone (cel care dă share screen)
     shareBtn.addEventListener("click", async () => {
       const roomId = roomInput.value.trim();
       if (!roomId) return alert("Introdu un cod de cameră.");
@@ -205,7 +197,6 @@
       }
     });
 
-    // Rol: MacBook (cel care urmărește)
     viewBtn.addEventListener("click", () => {
       const roomId = roomInput.value.trim();
       if (!roomId) return alert("Introdu un cod de cameră.");
@@ -215,7 +206,6 @@
       setStatus("Aștepți ca prietenul să pornească partajarea în camera: " + roomId, "#2563eb");
     });
 
-    // Semnalizare WebRTC
     socket.on("peer-joined", async ({ id }) => {
       if (currentRole === "sharer" && localStream) {
         const pc = createPeerConnection(id);

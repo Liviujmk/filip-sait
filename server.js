@@ -5,10 +5,9 @@ const { Server } = require("socket.io");
 const app = express();
 const server = http.createServer(app);
 
-// Permite conexiuni de pe domeniul tău găzduit pe GitHub Pages
 const io = new Server(server, {
   cors: {
-    origin: "*", // Opțional: poți înlocui "*" cu "https://domeniul-tau.ro" pentru securitate maximă
+    origin: "*",
     methods: ["GET", "POST"]
   }
 });
