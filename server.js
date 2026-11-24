@@ -23,6 +23,13 @@ io.on("connection", (socket) => {
     socket.join(roomId);
     socket.data.roomId = roomId;
     socket.data.role = role;
+
+    const roomSockets = io.sockets.adapter.rooms.get(roomId);
+    const existingIds = roomSockets
+      ? Array.from(roomSockets).filter((id) => id !== socket.id)
+      : [];
+
+    socket.emit("existing-peers", { ids: existingIds });
     socket.to(roomId).emit("peer-joined", { id: socket.id, role });
   });
 
