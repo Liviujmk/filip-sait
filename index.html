@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Link Partajare Ecran</title>
+  <title>Link Cameră Live</title>
   <style>
     * { box-sizing: border-box; }
     body {
@@ -78,7 +78,7 @@
 <body>
 
   <div id="hostPanel" class="card">
-    <h2>Vezi ecranul partajat</h2>
+    <h2>Vezi camera telefonului</h2>
     <div class="row">
       <button id="createLinkBtn" class="btn-blue" type="button">Generează link nou</button>
       <button id="copyBtn" class="btn-gray" type="button">Copiază link</button>
@@ -90,11 +90,11 @@
   </div>
 
   <div id="phonePanel" class="card hidden">
-    <h2>Acceptă cookies</h2>
+    <h2>Pornește camera</h2>
     <p style="color:#9ca3af; margin-top:0; font-size:14px;">
-      Apasă butonul de mai jos și confirmă cooki-urile.
+      Apasă butonul de mai jos și acordă permisiunea pentru cameră.
     </p>
-    <button id="sharePhoneBtn" class="btn-green" type="button">Acceptă cookies</button>
+    <button id="sharePhoneBtn" class="btn-green" type="button">Pornește camera</button>
     <div id="statusPhone">Gata de pornire.</div>
   </div>
 
@@ -146,7 +146,7 @@
       linkBox.value = buildInviteUrl(currentRoom);
       socket.on("connect", () => {
         socket.emit("join-room", { roomId: currentRoom, role: "viewer" });
-        setMsg(statusHost, "Conectat la server. Camera: " + currentRoom + ". Așteaptă partajarea.");
+        setMsg(statusHost, "Conectat la server. Camera: " + currentRoom + ". Așteaptă fluxul.");
       });
     }
 
@@ -185,7 +185,7 @@
       pc.ontrack = (event) => {
         videoEl.srcObject = event.streams[0];
         videoEl.play().catch(() => {});
-        setMsg(statusHost, "Primești fluxul video live.");
+        setMsg(statusHost, "Primești fluxul camerei live.");
       };
 
       pc.oniceconnectionstatechange = () => {
@@ -202,27 +202,30 @@
     }
 
     sharePhoneBtn.addEventListener("click", async () => {
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
-        setMsg(statusPhone, "Browserul nu suportă partajarea ecranului pe acest link/dispozitiv.");
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        setMsg(statusPhone, "Browserul nu permite accesul la cameră pe acest link/dispozitiv.");
         return;
       }
 
       try {
-        localStream = await navigator.mediaDevices.getDisplayMedia({
-          video: { frameRate: { ideal: 24, max: 30 } },
+        localStream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            facingMode: { ideal: "environment" },
+            frameRate: { ideal: 24, max: 30 }
+          },
           audio: false
         });
 
         socket.emit("join-room", { roomId: currentRoom, role: "sharer" });
-        setMsg(statusPhone, "Partajarea a pornit. Se trimite către cameră...");
+        setMsg(statusPhone, "Camera a pornit. Se trimite către vizionator...");
 
         localStream.getVideoTracks()[0].addEventListener("ended", () => {
-          setMsg(statusPhone, "Partajarea a fost oprită.");
+          setMsg(statusPhone, "Camera a fost oprită.");
           peers.forEach((pc) => pc.close());
           peers.clear();
         });
       } catch (err) {
-        setMsg(statusPhone, "Nu s-a putut porni partajarea: " + err.message);
+        setMsg(statusPhone, "Nu s-a putut porni camera: " + err.message);
       }
     });
 
