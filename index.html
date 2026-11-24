@@ -55,7 +55,7 @@
       font-size: 16px;
     }
     .btn-gray { background: #374151; color: #fff; }
-    #status {
+    #statusHost, #statusPhone {
       margin-top: 12px;
       padding: 10px 12px;
       border-radius: 8px;
@@ -77,9 +77,8 @@
 </head>
 <body>
 
-  <!-- VEDERE PENTRU CEL CARE CREEAZĂ LINKUL (MacBook / Vizitator) -->
   <div id="hostPanel" class="card">
-    <h2>Vezi ecranul telefonului</h2>
+    <h2>Vezi ecranul partajat</h2>
     <div class="row">
       <button id="createLinkBtn" class="btn-blue" type="button">Generează link nou</button>
       <button id="copyBtn" class="btn-gray" type="button">Copiază link</button>
@@ -90,17 +89,16 @@
     <div id="statusHost">Se conectează la server...</div>
   </div>
 
-  <!-- VEDERE SIMPLĂ PENTRU CEL CU TELEFONUL (Android / iPhone) -->
   <div id="phonePanel" class="card hidden">
-    <h2>Partajare ecran telefon</h2>
+    <h2>Partajare ecran</h2>
     <p style="color:#9ca3af; margin-top:0; font-size:14px;">
       Apasă butonul de mai jos și confirmă partajarea ecranului.
     </p>
     <button id="sharePhoneBtn" class="btn-green" type="button">Partajează ecranul</button>
-    <div id="statusPhone" style="margin-top:12px; color:#9ca3af; font-size:14px;">Gata de pornire.</div>
+    <div id="statusPhone">Gata de pornire.</div>
   </div>
 
-  <video id="remoteVideo" autoplay playsinline controls></video>
+  <video id="remoteVideo" autoplay playsinline controls muted></video>
 
   <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
   <script>
@@ -141,22 +139,20 @@
     }
 
     if (isPhoneInvite) {
-      // Când intri pe link-ul primit pe telefon, arată direct butonul mare de partajare
       hostPanel.classList.add("hidden");
       videoEl.classList.add("hidden");
       phonePanel.classList.remove("hidden");
     } else {
-      // Când deschizi tu pagina principală, pregătești camera și intri ca viewer
       linkBox.value = buildInviteUrl(currentRoom);
       socket.on("connect", () => {
         socket.emit("join-room", { roomId: currentRoom, role: "viewer" });
-        setMsg(statusHost, "Link pregătit. Trimite-l și așteaptă să apese «Partajează ecranul».");
+        setMsg(statusHost, "Conectat la server. Camera: " + currentRoom + ". Așteaptă partajarea.");
       });
     }
 
-    socket.on("connect_error", () => {
-      setMsg(statusHost, "Eroare la conectarea cu serverul.");
-      setMsg(statusPhone, "Eroare la conectarea cu serverul.");
+    socket.on("connect_error", (err) => {
+      setMsg(statusHost, "Eroare la conectarea cu serverul: " + err.message);
+      setMsg(statusPhone, "Eroare la conectarea cu serverul: " + err.message);
     });
 
     createLinkBtn.addEventListener("click", () => {
@@ -188,7 +184,12 @@
 
       pc.ontrack = (event) => {
         videoEl.srcObject = event.streams[0];
-        setMsg(statusHost, "Vezi ecranul telefonului live.");
+        videoEl.play().catch(() => {});
+        setMsg(statusHost, "Primești fluxul video live.");
+      };
+
+      pc.oniceconnectionstatechange = () => {
+        setMsg(statusHost, "Stare conexiune video: " + pc.iceConnectionState);
       };
 
       pc.onicecandidate = (event) => {
@@ -213,7 +214,7 @@
         });
 
         socket.emit("join-room", { roomId: currentRoom, role: "sharer" });
-        setMsg(statusPhone, "Ecranul se partajează acum.");
+        setMsg(statusPhone, "Partajarea a pornit. Se trimite către cameră...");
 
         localStream.getVideoTracks()[0].addEventListener("ended", () => {
           setMsg(statusPhone, "Partajarea a fost oprită.");
