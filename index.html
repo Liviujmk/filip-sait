@@ -3,82 +3,101 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Partajare Ecran Live</title>
+  <title>Link Partajare Ecran</title>
   <style>
     * { box-sizing: border-box; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      max-width: 960px;
+      max-width: 900px;
       margin: 0 auto;
       padding: 20px 16px;
       background: #0f1115;
       color: #f3f4f6;
     }
-    h2 { margin-top: 0; font-size: 20px; }
     .card {
       background: #181b21;
       border: 1px solid #2a2f3a;
-      border-radius: 12px;
-      padding: 16px;
+      border-radius: 14px;
+      padding: 18px;
       margin-bottom: 16px;
     }
-    .controls {
+    h2 { margin: 0 0 12px 0; font-size: 20px; }
+    .row {
       display: flex;
-      flex-wrap: wrap;
       gap: 10px;
-      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
     }
     input {
+      flex: 1;
+      min-width: 200px;
       background: #0f1115;
       color: #fff;
       border: 1px solid #374151;
-      padding: 10px 14px;
-      border-radius: 8px;
-      font-size: 15px;
-      flex: 1;
-      min-width: 150px;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 14px;
     }
     button {
-      padding: 10px 16px;
-      border-radius: 8px;
+      padding: 12px 18px;
+      border-radius: 10px;
       border: none;
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 600;
       cursor: pointer;
     }
-    .btn-primary { background: #2563eb; color: #fff; }
-    .btn-success { background: #16a34a; color: #fff; }
-    .btn-secondary { background: #374151; color: #fff; }
+    .btn-blue { background: #2563eb; color: #fff; }
+    .btn-green {
+      background: #16a34a;
+      color: #fff;
+      width: 100%;
+      padding: 15px;
+      font-size: 16px;
+    }
+    .btn-gray { background: #374151; color: #fff; }
     #status {
-      font-size: 14px;
-      color: #9ca3af;
       margin-top: 12px;
-      padding: 8px 12px;
+      padding: 10px 12px;
+      border-radius: 8px;
       background: #0f1115;
-      border-radius: 6px;
-      border-left: 3px solid #2563eb;
+      border-left: 4px solid #2563eb;
+      color: #d1d5db;
+      font-size: 14px;
     }
     video {
       width: 100%;
-      max-height: 78vh;
+      max-height: 75vh;
       background: #000;
-      border-radius: 12px;
+      border-radius: 14px;
       border: 1px solid #2a2f3a;
       display: block;
     }
+    .hidden { display: none; }
   </style>
 </head>
 <body>
 
-  <div class="card">
-    <h2>Partajare Ecran Live</h2>
-    <div class="controls">
-      <input id="roomInput" type="text" placeholder="Cod cameră" />
-      <button id="copyLinkBtn" class="btn-secondary" type="button">Copiază link invitație</button>
-      <button id="shareBtn" class="btn-success" type="button">Partajează ecranul (iPhone)</button>
-      <button id="viewBtn" class="btn-primary" type="button">Vizionează (MacBook)</button>
+  <!-- VEDERE PENTRU CEL CARE CREEAZĂ LINKUL (MacBook / Vizitator) -->
+  <div id="hostPanel" class="card">
+    <h2>Vezi ecranul telefonului</h2>
+    <div class="row">
+      <button id="createLinkBtn" class="btn-blue" type="button">Generează link nou</button>
+      <button id="copyBtn" class="btn-gray" type="button">Copiază link</button>
     </div>
-    <div id="status">Se inițializează conexiunea cu serverul...</div>
+    <div class="row">
+      <input id="linkBox" type="text" readonly />
+    </div>
+    <div id="statusHost">Se conectează la server...</div>
+  </div>
+
+  <!-- VEDERE SIMPLĂ PENTRU CEL CU TELEFONUL (Android / iPhone) -->
+  <div id="phonePanel" class="card hidden">
+    <h2>Partajare ecran telefon</h2>
+    <p style="color:#9ca3af; margin-top:0; font-size:14px;">
+      Apasă butonul de mai jos și confirmă partajarea ecranului.
+    </p>
+    <button id="sharePhoneBtn" class="btn-green" type="button">Partajează ecranul</button>
+    <div id="statusPhone" style="margin-top:12px; color:#9ca3af; font-size:14px;">Gata de pornire.</div>
   </div>
 
   <video id="remoteVideo" autoplay playsinline controls></video>
@@ -86,21 +105,21 @@
   <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
   <script>
     const SIGNALING_SERVER_URL = "https://filip-sait.onrender.com";
+    const socket = io(SIGNALING_SERVER_URL, { transports: ["websocket", "polling"] });
 
-    const socket = io(SIGNALING_SERVER_URL, {
-      transports: ["websocket", "polling"]
-    });
+    const params = new URLSearchParams(window.location.search);
+    const roomFromUrl = params.get("room");
+    const isPhoneInvite = Boolean(roomFromUrl);
 
-    const roomInput = document.getElementById("roomInput");
-    const copyLinkBtn = document.getElementById("copyLinkBtn");
-    const shareBtn = document.getElementById("shareBtn");
-    const viewBtn = document.getElementById("viewBtn");
-    const statusEl = document.getElementById("status");
+    const hostPanel = document.getElementById("hostPanel");
+    const phonePanel = document.getElementById("phonePanel");
+    const createLinkBtn = document.getElementById("createLinkBtn");
+    const copyBtn = document.getElementById("copyBtn");
+    const linkBox = document.getElementById("linkBox");
+    const sharePhoneBtn = document.getElementById("sharePhoneBtn");
+    const statusHost = document.getElementById("statusHost");
+    const statusPhone = document.getElementById("statusPhone");
     const videoEl = document.getElementById("remoteVideo");
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const initialRoom = urlParams.get("room") || "cam-" + Math.random().toString(36).substring(2, 7);
-    roomInput.value = initialRoom;
 
     const rtcConfig = {
       iceServers: [
@@ -109,32 +128,53 @@
       ]
     };
 
+    let currentRoom = roomFromUrl || ("s-" + Math.random().toString(36).substring(2, 8));
     let localStream = null;
     const peers = new Map();
-    let currentRole = null;
 
-    function setStatus(msg, color = "#2563eb") {
-      statusEl.textContent = msg;
-      statusEl.style.borderLeftColor = color;
+    function setMsg(el, text) {
+      el.textContent = text;
     }
 
-    socket.on("connect", () => {
-      setStatus("Conectat la server. Alege rolul sau trimite linkul.", "#16a34a");
+    function buildInviteUrl(room) {
+      return `${window.location.origin}${window.location.pathname}?room=${encodeURIComponent(room)}`;
+    }
+
+    if (isPhoneInvite) {
+      // Când intri pe link-ul primit pe telefon, arată direct butonul mare de partajare
+      hostPanel.classList.add("hidden");
+      videoEl.classList.add("hidden");
+      phonePanel.classList.remove("hidden");
+    } else {
+      // Când deschizi tu pagina principală, pregătești camera și intri ca viewer
+      linkBox.value = buildInviteUrl(currentRoom);
+      socket.on("connect", () => {
+        socket.emit("join-room", { roomId: currentRoom, role: "viewer" });
+        setMsg(statusHost, "Link pregătit. Trimite-l și așteaptă să apese «Partajează ecranul».");
+      });
+    }
+
+    socket.on("connect_error", () => {
+      setMsg(statusHost, "Eroare la conectarea cu serverul.");
+      setMsg(statusPhone, "Eroare la conectarea cu serverul.");
     });
 
-    socket.on("connect_error", (err) => {
-      setStatus("Eroare la conectarea cu serverul: " + err.message, "#dc2626");
+    createLinkBtn.addEventListener("click", () => {
+      currentRoom = "s-" + Math.random().toString(36).substring(2, 8);
+      linkBox.value = buildInviteUrl(currentRoom);
+      videoEl.srcObject = null;
+      socket.emit("join-room", { roomId: currentRoom, role: "viewer" });
+      setMsg(statusHost, "Link nou creat. Copiază-l și trimite-l.");
     });
 
-    copyLinkBtn.addEventListener("click", async () => {
-      const room = roomInput.value.trim();
-      if (!room) return;
-      const inviteUrl = `${window.location.origin}${window.location.pathname}?room=${encodeURIComponent(room)}`;
+    copyBtn.addEventListener("click", async () => {
       try {
-        await navigator.clipboard.writeText(inviteUrl);
-        setStatus("Link copiat! Trimite-l prietenului: " + inviteUrl, "#16a34a");
+        await navigator.clipboard.writeText(linkBox.value);
+        setMsg(statusHost, "Link copiat în clipboard.");
       } catch {
-        prompt("Copiază acest link:", inviteUrl);
+        linkBox.select();
+        document.execCommand("copy");
+        setMsg(statusHost, "Link selectat/copiat.");
       }
     });
 
@@ -148,7 +188,7 @@
 
       pc.ontrack = (event) => {
         videoEl.srcObject = event.streams[0];
-        setStatus("Primești imaginea live!", "#16a34a");
+        setMsg(statusHost, "Vezi ecranul telefonului live.");
       };
 
       pc.onicecandidate = (event) => {
@@ -157,55 +197,36 @@
         }
       };
 
-      pc.onconnectionstatechange = () => {
-        if (pc.connectionState === "disconnected" || pc.connectionState === "failed") {
-          setStatus("Conexiunea video s-a întrerupt.", "#dc2626");
-        }
-      };
-
       return pc;
     }
 
-    shareBtn.addEventListener("click", async () => {
-      const roomId = roomInput.value.trim();
-      if (!roomId) return alert("Introdu un cod de cameră.");
-
+    sharePhoneBtn.addEventListener("click", async () => {
       if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
-        setStatus("Browserul nu suportă partajarea ecranului (necesită Safari iOS 15+ pe HTTPS).", "#dc2626");
+        setMsg(statusPhone, "Browserul nu suportă partajarea ecranului pe acest link/dispozitiv.");
         return;
       }
 
       try {
         localStream = await navigator.mediaDevices.getDisplayMedia({
-          video: { frameRate: { ideal: 30, max: 60 } },
+          video: { frameRate: { ideal: 24, max: 30 } },
           audio: false
         });
 
-        currentRole = "sharer";
-        socket.emit("join-room", { roomId, role: "sharer" });
-        setStatus("Partajezi ecranul în camera: " + roomId, "#16a34a");
+        socket.emit("join-room", { roomId: currentRoom, role: "sharer" });
+        setMsg(statusPhone, "Ecranul se partajează acum.");
 
         localStream.getVideoTracks()[0].addEventListener("ended", () => {
-          setStatus("Ai oprit partajarea ecranului.", "#eab308");
+          setMsg(statusPhone, "Partajarea a fost oprită.");
           peers.forEach((pc) => pc.close());
           peers.clear();
         });
       } catch (err) {
-        setStatus("Partajare anulată sau blocată: " + err.message, "#dc2626");
+        setMsg(statusPhone, "Nu s-a putut porni partajarea: " + err.message);
       }
     });
 
-    viewBtn.addEventListener("click", () => {
-      const roomId = roomInput.value.trim();
-      if (!roomId) return alert("Introdu un cod de cameră.");
-
-      currentRole = "viewer";
-      socket.emit("join-room", { roomId, role: "viewer" });
-      setStatus("Aștepți ca prietenul să pornească partajarea în camera: " + roomId, "#2563eb");
-    });
-
     socket.on("peer-joined", async ({ id }) => {
-      if (currentRole === "sharer" && localStream) {
+      if (localStream) {
         const pc = createPeerConnection(id);
         const offer = await pc.createOffer();
         await pc.setLocalDescription(offer);
@@ -233,15 +254,6 @@
       if (pc && candidate) {
         await pc.addIceCandidate(new RTCIceCandidate(candidate));
       }
-    });
-
-    socket.on("peer-left", ({ id }) => {
-      const pc = peers.get(id);
-      if (pc) {
-        pc.close();
-        peers.delete(id);
-      }
-      setStatus("Cealaltă persoană a părăsit camera.", "#eab308");
     });
   </script>
 </body>
