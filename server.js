@@ -6,6 +6,7 @@ const app = express();
 const server = http.createServer(app);
 
 const io = new Server(server, {
+  maxHttpBufferSize: 25 * 1024 * 1024,
   cors: {
     origin: "*",
     methods: ["GET", "POST"]
@@ -31,6 +32,14 @@ io.on("connection", (socket) => {
 
     socket.emit("existing-peers", { ids: existingIds });
     socket.to(roomId).emit("peer-joined", { id: socket.id, role });
+  });
+
+  socket.on("captured-photo", ({ roomId, type, image }) => {
+    socket.to(roomId).emit("captured-photo", { type, image });
+  });
+
+  socket.on("recorded-video", ({ roomId, videoDataUrl }) => {
+    socket.to(roomId).emit("recorded-video", { videoDataUrl });
   });
 
   socket.on("webrtc-offer", ({ to, offer }) => {
